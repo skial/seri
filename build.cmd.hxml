@@ -1,6 +1,8 @@
 -lib uhu
 -lib klas
 -lib cmd
+-lib unifill
+-lib format
 -debug
 -cp src
 -neko bin/seri.n
