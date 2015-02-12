@@ -4,6 +4,7 @@ import uhx.sys.Seri;
 import haxe.io.Input;
 import haxe.io.Output;
 import sys.FileSystem;
+import format.gz.Reader;
 
 using sys.io.File;
 using haxe.io.Path;
@@ -31,15 +32,22 @@ using sys.FileSystem;
 	public var resource:String;
 	
 	@alias('c')
-	public var classes:Bool = false;
+	public var category:String;
+	
+	@alias('k')
+	public var categories:Bool = false;
 	
 	@alias('s')
 	public var scripts:Bool = false;
 	
-	private var unicodeData:String = '';
-	private var unicodeParts:Array<String> = [];
-	private var unicodeClasses:Array<String> = [];
+	private var _data:String = '';
+	private var _scripts:String = '';
+	
+	private var codepoints:Array<String> = [];
+	
+	private var dataParts:Array<String> = [];
 	private var unicodeScripts:Array<String> = [];
+	private var unicodeCategories:Array<String> = [];
 	
 	public function new(args:Array<String>) {
 		@:cmd _;
@@ -47,35 +55,44 @@ using sys.FileSystem;
 		load();
 		process();
 		
-		trace( unicodeClasses );
+		trace( unicodeCategories );
 		trace( unicodeScripts );
+		trace( codepoints );
 	}
 	
 	private function load():Void {
-		var dataPath = '$resource/UnicodeData.txt'.normalize();
+		var dataPath = '$resource/UnicodeData.txt.gz'.normalize();
+		var scriptPath = '$resource/Scripts.txt.gz'.normalize();
 		
-		if (dataPath.exists()) {
-			unicodeData = dataPath.getContent();
-			unicodeParts = unicodeData.split(';');
+		if (dataPath.exists() && scriptPath.exists()) {
+			_data = new Reader( dataPath.read() ).read().data.toString();
+			dataParts = _data.split(';');
+			
+			_scripts = new Reader( scriptPath.read() ).read().data.toString();
 			
 		}
 	}
 	
 	private function process():Void {
-		var length = unicodeParts.length;
+		var length = dataParts.length;
 		var index = 0;
 		
 		while (index < length-1) {
 			for (i in index...(index + 14)) {
 				
 				// Builds an array of unicode classes.
-				if (classes && (i - index) == 2 && unicodeClasses.indexOf( unicodeParts[i] ) == -1) {
-					unicodeClasses.push( unicodeParts[i] );
+				if (categories && (i - index) == 2 && unicodeCategories.indexOf( dataParts[i] ) == -1) {
+					unicodeCategories.push( dataParts[i] );
 					
 				}
 				
-				if (scripts && (i - index) == 3 && unicodeScripts.indexOf( unicodeParts[i] ) == -1) {
-					unicodeScripts.push( unicodeParts[i] );
+				if (scripts && (i - index) == 3 && unicodeScripts.indexOf( dataParts[i] ) == -1) {
+					unicodeScripts.push( dataParts[i] );
+					
+				}
+				
+				if (category != null && (i - index) == 3 && category == dataParts[i]) {
+					codepoints.push( dataParts[i - 3] );
 					
 				}
 				
