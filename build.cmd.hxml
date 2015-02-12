@@ -1,6 +1,7 @@
 -lib uhu
 -lib klas
 -lib cmd
+-debug
 -cp src
 -neko bin/seri.n
--main Main
+-main uhx.sys.LibRunner
