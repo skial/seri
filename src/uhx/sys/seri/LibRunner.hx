@@ -70,6 +70,7 @@ private typedef Group = {> Range, > Information,
 	private var blockParts:Array<String> = [];
 	private var scriptParts:Array<String> = [];
 	
+	private var unicodeData:Array<UnicodeData> = [];
 	private var unicodeBlocks:Array<String> = [];
 	private var unicodeScripts:Array<String> = [];
 	private var unicodeCategories:Array<String> = [];
@@ -93,7 +94,7 @@ private typedef Group = {> Range, > Information,
 	}
 	
 	private function loadUnicodeData():Void {
-		dataParts = ( _data = '$resource/UnicodeData.txt.gz'.load() ).split( ';' );
+		dataParts = ( _data = '$resource/UnicodeData.txt.gz'.load().sanitize() ).split( ';' );
 	}
 	
 	private function loadScripts():Void {
@@ -108,26 +109,7 @@ private typedef Group = {> Range, > Information,
 		var length = dataParts.length;
 		var index = 0;
 		
-		// UnicodeData.txt
-		while (index < length - 1) {
-			for (i in index...(index + 14)) {
-				
-				// Builds an array of unicode classes.
-				if (categories && (i - index) == 2 && unicodeCategories.indexOf( dataParts[i] ) == -1) {
-					unicodeCategories.push( dataParts[i] );
-					
-				}
-				
-				if (category != null && (i - index) == 3 && category == dataParts[i]) {
-					codepoints.push( dataParts[i - 3] );
-					
-				}
-				
-			}
-			
-			// Move to the next row.
-			index += 14;
-		}
+		processUnicodeData();
 		
 		// Scripts.txt
 		length = scriptParts.length;
@@ -161,6 +143,26 @@ private typedef Group = {> Range, > Information,
 			// Move to the next row.
 			index += 2;
 			
+		}
+	}
+	
+	private function processUnicodeData():Void {
+		var index = 0;
+		var data:UnicodeData;
+		var length = dataParts.length;
+		
+		while (index < length - 1) {
+			data = dataParts.slice(index, index + 15);
+			unicodeData.push( data );
+			
+			// Builds an array of unicode classes.
+			if (categories && unicodeCategories.indexOf( data.category ) == -1) {
+				unicodeCategories.push( data.category );
+				
+			}
+			
+			// Move to the next row.
+			index += 15;
 		}
 	}
 	
