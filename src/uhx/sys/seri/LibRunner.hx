@@ -64,15 +64,18 @@ private typedef Group = {> Range, > Information,
 	private var _blocks:String = '';
 	private var _scripts:String = '';
 	
-	private var codepoints:Array<String> = [];
+	private var blockResults:Array<String> = [];
+	private var scriptResults:Array<String> = [];
+	private var categoryResults:Array<String> = [];
+	private var codepointResults:Array<String> = [];
 	
 	private var dataParts:Array<String> = [];
 	private var blockParts:Array<String> = [];
 	private var scriptParts:Array<String> = [];
 	
 	private var unicodeData:Array<UnicodeData> = [];
-	private var unicodeBlocks:Array<String> = [];
-	private var unicodeScripts:Array<String> = [];
+	private var unicodeBlocks:Array<BlockData> = [];
+	private var unicodeScripts:Array<ScriptData> = [];
 	private var unicodeCategories:Array<String> = [];
 	
 	public function new(args:Array<String>) {
@@ -81,10 +84,10 @@ private typedef Group = {> Range, > Information,
 		loadAll();
 		process();
 		
-		trace( unicodeCategories );
-		trace( unicodeScripts );
-		trace( codepoints );
-		trace( unicodeBlocks );
+		trace( categoryResults );
+		trace( scriptResults );
+		trace( codepointResults );
+		trace( blockResults );
 	}
 	
 	private function loadAll():Void {
@@ -110,40 +113,8 @@ private typedef Group = {> Range, > Information,
 		var index = 0;
 		
 		processUnicodeData();
-		
-		// Scripts.txt
-		length = scriptParts.length;
-		index = 0;
-		
-		if (scripts) while (index < length - 1) {
-			for (i in index...(index + 3)) {
-				if ((i - index) == 1 && unicodeScripts.indexOf( scriptParts[i].trim() ) == -1) {
-					unicodeScripts.push( scriptParts[i].trim() );
-					
-				}
-				
-			}
-			
-			// Move to the next row.
-			index += 3;
-			
-		}
-		
-		// Blocks.txt
-		length = blockParts.length;
-		index = 0;
-		
-		if (blocks) while (index < length - 1) {
-			for (i in index...(index + 2)) {
-				// The second check isnt needed at the time of writing.
-				if ((i - index) == 1 && unicodeBlocks.indexOf( blockParts[i].trim() ) == -1) unicodeBlocks.push( blockParts[i].trim() );
-				
-			}
-			
-			// Move to the next row.
-			index += 2;
-			
-		}
+		if (scripts) processScriptData();
+		if (blocks) processBlockData();
 	}
 	
 	private function processUnicodeData():Void {
@@ -156,13 +127,53 @@ private typedef Group = {> Range, > Information,
 			unicodeData.push( data );
 			
 			// Builds an array of unicode classes.
-			if (categories && unicodeCategories.indexOf( data.category ) == -1) {
-				unicodeCategories.push( data.category );
+			if (categories && categoryResults.indexOf( data.category ) == -1) {
+				categoryResults.push( data.category );
 				
 			}
 			
 			// Move to the next row.
 			index += 15;
+		}
+	}
+	
+	private function processScriptData():Void {
+		var index = 0;
+		var data:ScriptData;
+		var length = scriptParts.length;
+		
+		while (index < length -1) {
+			data = scriptParts.slice(index, index + 4);
+			unicodeScripts.push( data );
+			
+			// Builds an array of unicode scripts.
+			if (scriptResults.indexOf( data.script ) == -1) {
+				scriptResults.push( data.script );
+				
+			}
+			
+			// Move to the next row.
+			index += 3;
+		}
+	}
+	
+	private function processBlockData():Void {
+		var index = 0;
+		var data:BlockData;
+		var length = blockParts.length;
+		
+		while (index < length - 1) {
+			data = blockParts.slice(index, index + 3);
+			unicodeBlocks.push( data );
+			
+			// Builds an array of unicode blocks.
+			if (blockResults.indexOf( data.block ) == -1) {
+				blockResults.push( data.block );
+				
+			}
+			
+			// Move to the next row.
+			index += 2;
 		}
 	}
 	
