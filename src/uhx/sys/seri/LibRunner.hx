@@ -17,11 +17,6 @@ using uhx.sys.seri.LibRunner;
  * @author Skial Bainn
  */
 
-private typedef Range = {
-	var min:Int;
-	var max:Int;
-}
-
 private typedef Information = {
 	var name:String;
 	var category:String;
