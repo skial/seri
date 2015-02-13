@@ -1,4 +1,4 @@
-package uhx.sys;
+package uhx.sys.seri;
 
 import uhx.sys.Seri;
 import haxe.io.Input;
@@ -10,11 +10,27 @@ using StringTools;
 using sys.io.File;
 using haxe.io.Path;
 using sys.FileSystem;
+using uhx.sys.seri.LibRunner;
 
 /**
  * ...
  * @author Skial Bainn
  */
+
+private typedef Range = {
+	var min:Int;
+	var max:Int;
+}
+
+private typedef Information = {
+	var name:String;
+	var category:String;
+}
+
+private typedef Group = {> Range, > Information,
+	
+}
+ 
 @:usage( 
 	'seri [options]',
 	'seri --help',
@@ -61,7 +77,7 @@ using sys.FileSystem;
 	public function new(args:Array<String>) {
 		@:cmd _;
 		
-		load();
+		loadAll();
 		process();
 		
 		trace( unicodeCategories );
@@ -70,24 +86,22 @@ using sys.FileSystem;
 		trace( unicodeBlocks );
 	}
 	
-	private function load():Void {
-		var blockPath = '$resource/Blocks.txt.gz'.normalize();
-		var scriptPath = '$resource/Scripts.txt.gz'.normalize();
-		var dataPath = '$resource/UnicodeData.txt.gz'.normalize();
-		
-		if (dataPath.exists() && scriptPath.exists() && blockPath.exists()) {
-			// Easy, seperated by `;`
-			_data = new Reader( dataPath.read() ).read().data.toString();
-			dataParts = _data.split(';');
-			
-			// Blocks of text starting with `#`, with lines containing `;` and `#' between info :/
-			_scripts = sanitize( new Reader( scriptPath.read() ).read().data.toString() ).replace('#', ';');
-			scriptParts = _scripts.split(';');
-			
-			// Block of text starting with `#', seperated by `;` and `\n`. `\n` is replaced by `;`.
-			_blocks = sanitize( new Reader( blockPath.read() ).read().data.toString() );
-			blockParts = _blocks.split(';');
-		}
+	private function loadAll():Void {
+		loadUnicodeData();
+		loadScripts();
+		loadBlocks();
+	}
+	
+	private function loadUnicodeData():Void {
+		dataParts = ( _data = '$resource/UnicodeData.txt.gz'.load() ).split( ';' );
+	}
+	
+	private function loadScripts():Void {
+		scriptParts = ( _scripts = '$resource/Scripts.txt.gz'.load().sanitize().replace( '#', ';' ) ).split( ';' );
+	}
+	
+	private function loadBlocks():Void {
+		blockParts = ( _blocks = '$resource/Blocks.txt.gz'.load().sanitize() ).split( ';' );
 	}
 	
 	private function process():Void {
@@ -128,6 +142,7 @@ using sys.FileSystem;
 				
 			}
 			
+			// Move to the next row.
 			index += 3;
 			
 		}
@@ -149,7 +164,18 @@ using sys.FileSystem;
 		}
 	}
 	
-	private function sanitize(value:String):String {
+	private static function load(path:String):String {
+		return path.exists() ? loadGzip( path ) : '';
+	}
+	
+	private static function loadGzip(path:String):String {
+		var handle = path.read();
+		var result = new Reader( handle ).read().data.toString();
+		handle.close();
+		return result;
+	}
+	
+	private static function sanitize(value:String):String {
 		return value.split('\n').filter( function(s) return !s.startsWith('#') && s.trim() != '' ).join(';');
 	}
 	
