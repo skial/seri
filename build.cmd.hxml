@@ -6,4 +6,4 @@
 -debug
 -cp src
 -neko bin/seri.n
--main uhx.sys.LibRunner
+-main uhx.sys.seri.LibRunner
