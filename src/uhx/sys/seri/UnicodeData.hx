@@ -1,7 +1,5 @@
 package uhx.sys.seri;
 
-import unifill.CodePoint;
-
 using StringTools;
 
 /**
@@ -20,7 +18,7 @@ using StringTools;
 	}
 	
 	private inline function get_codepoint():CodePoint {
-		return new CodePoint( Std.parseInt( '0x${this[0].trim()}' ) );
+		return Std.parseInt( '0x${this[0].trim()}' );
 	}
 	
 	private inline function get_name():String {
