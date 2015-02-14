@@ -81,17 +81,17 @@ private typedef Group = {> Range, > Information,
 		
 		trace( categoryResults );
 		trace( scriptResults );
-		trace( codepointResults );
 		trace( blockResults );
+		trace( codepointResults );
 	}
 	
 	private function loadAll():Void {
-		loadUnicodeData();
-		loadScripts();
-		loadBlocks();
+		loadData();
+		if (scripts) loadScripts();
+		if (blocks) loadBlocks();
 	}
 	
-	private function loadUnicodeData():Void {
+	private function loadData():Void {
 		dataParts = ( _data = '$resource/UnicodeData.txt.gz'.load().sanitize() ).split( ';' );
 	}
 	
