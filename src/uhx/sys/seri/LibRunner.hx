@@ -40,18 +40,33 @@ private typedef Group = {> Range, > Information,
 	@alias('v')
 	public var version:UnicodeVersion = '7.0.0';
 	
+	/**
+	 * The path which stores the Unicode database.
+	 */
 	@alias('r')
 	public var resource:String;
 	
+	/**
+	 * Returns all the code points for this category.
+	 */
 	@alias('c')
 	public var category:String;
 	
+	/**
+	 * Returns all the unicode categories.
+	 */
 	@alias('C')
 	public var categories:Bool = false;
 	
+	/**
+	 * Returns all the unicode scripts.
+	 */
 	@alias('s')
 	public var scripts:Bool = false;
 	
+	/**
+	 * Returns all the unicode blocks.
+	 */
 	@alias('b')
 	public var blocks:Bool = false;
 	
