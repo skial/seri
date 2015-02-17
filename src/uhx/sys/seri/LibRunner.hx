@@ -25,6 +25,13 @@ private typedef Information = {
 private typedef Group = {> Range, > Information,
 	
 }
+
+private typedef Results = {
+	@:optional var categories:Array<String>;
+	@:optional var scripts:Array<String>;
+	@:optional var blocks:Array<String>;
+	@:optional var codepoints:Array<Int>;
+}
  
 @:usage( 
 	'seri [options]',
@@ -94,12 +101,7 @@ private typedef Group = {> Range, > Information,
 		loadAll();
 		process();
 		
-		trace( categoryResults );
-		trace( scriptResults );
-		trace( blockResults );
-		codepointResults.sort( function(a, b) return a > b ? 1 : (a == b ? 0 : -1) );
-		trace( codepointResults.length );
-		trace( categoryLength() );
+		Sys.print( buildJson( buildResult() ) );
 	}
 	
 	private function loadAll():Void {
@@ -125,7 +127,7 @@ private typedef Group = {> Range, > Information,
 		var index = 0;
 		
 		processUnicodeData();
-		if (scripts) processScriptData();
+		if (scripts || category != null) processScriptData();
 		if (blocks) processBlockData();
 		if (category != null && category.trim() != '' && category.length == 2) categoryCodepoints();
 	}
@@ -222,6 +224,42 @@ private typedef Group = {> Range, > Information,
 		}
 		
 		return result;
+	}
+	
+	private function buildResult():Results {
+		var result:Results = { };
+		
+		if (categoryResults.length > 0) result.categories = categoryResults;
+		if (scripts && scriptResults.length > 0) result.scripts = scriptResults;
+		if (blocks && blockResults.length > 0) result.blocks = blockResults;
+		
+		if (codepointResults.length > 0) {
+			codepointResults.sort( function(a, b) return a > b ? 1 : a == b ? 0 : -1 );
+			result.codepoints = codepointResults;
+			
+		}
+		
+		return result;
+	}
+	
+	private function buildJson(v:Results):String {
+		var counter = 0;
+		var sections = [];
+		
+		for (section in Reflect.fields(v)) {
+			counter = 0;
+			
+			sections.push( 
+				'\t"$section":[\n\t\t' + 
+				(Reflect.field(v, section):Array<String>).map( function(s) {
+					if (counter <= 110) counter += '$s'.length + 4;
+					return (counter > 110? { counter = 0; '\n\t\t'; } :'') + '"$s"';
+				} ).join(', ') + 
+				'\n\t]' 
+			);
+		}
+		
+		return '{\n' + sections.join( ',\n' ) + '\n}';
 	}
 	
 	private static function load(path:String):String {
