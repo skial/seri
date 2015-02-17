@@ -46,7 +46,7 @@ private typedef Group = {> Range, > Information,
 	@alias('c')
 	public var category:String;
 	
-	@alias('k')
+	@alias('C')
 	public var categories:Bool = false;
 	
 	@alias('s')
@@ -62,7 +62,7 @@ private typedef Group = {> Range, > Information,
 	private var blockResults:Array<String> = [];
 	private var scriptResults:Array<String> = [];
 	private var categoryResults:Array<String> = [];
-	private var codepointResults:Array<String> = [];
+	private var codepointResults:Array<Int> = [];
 	
 	private var dataParts:Array<String> = [];
 	private var blockParts:Array<String> = [];
@@ -82,13 +82,15 @@ private typedef Group = {> Range, > Information,
 		trace( categoryResults );
 		trace( scriptResults );
 		trace( blockResults );
-		trace( codepointResults );
+		codepointResults.sort( function(a, b) return a > b ? 1 : (a == b ? 0 : -1) );
+		trace( codepointResults.length );
+		trace( categoryLength() );
 	}
 	
 	private function loadAll():Void {
 		loadData();
-		if (scripts) loadScripts();
-		if (blocks) loadBlocks();
+		loadScripts();
+		loadBlocks();
 	}
 	
 	private function loadData():Void {
@@ -110,6 +112,7 @@ private typedef Group = {> Range, > Information,
 		processUnicodeData();
 		if (scripts) processScriptData();
 		if (blocks) processBlockData();
+		if (category != null && category.trim() != '' && category.length == 2) categoryCodepoints();
 	}
 	
 	private function processUnicodeData():Void {
@@ -170,6 +173,40 @@ private typedef Group = {> Range, > Information,
 			// Move to the next row.
 			index += 2;
 		}
+	}
+	
+	private function categoryCodepoints():Void {
+		var range:Range;
+		for (script in unicodeScripts) if (script.category == category) {
+			range = script.range;
+			
+			if (range.min == range.max) {
+				codepointResults.push( range.min );
+				
+			} else for (i in (range.min:Int)...((range.max:Int) + 1)) {
+				codepointResults.push( i );
+				
+			}
+		}
+	}
+	
+	private function categoryLength():Int {
+		var range:Range;
+		var result = 0;
+		
+		for (script in unicodeScripts) if (script.category == category) {
+			range = script.range;
+			
+			if (range.min == range.max) {
+				result++;
+				
+			} else {
+				result += (range.max:Int) - (range.min:Int)+1;
+				
+			}
+		}
+		
+		return result;
 	}
 	
 	private static function load(path:String):String {
