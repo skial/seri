@@ -250,12 +250,12 @@ private typedef Results = {
 			counter = 0;
 			
 			sections.push( 
-				'\t"$section":[\n\t\t' + 
+				'"$section":[\n\t' + 
 				(Reflect.field(v, section):Array<String>).map( function(s) {
-					if (counter <= 110) counter += '$s'.length + 4;
-					return (counter > 110? { counter = 0; '\n\t\t'; } :'') + '"$s"';
+					if (counter <= 35) counter += '$s'.length + 6;
+					return (counter > 35? { counter = 0; '\n\t'; } :'') + (Std.is(s, Int)? '$s' : '"$s"');
 				} ).join(', ') + 
-				'\n\t]' 
+				'\n]' 
 			);
 		}
 		
