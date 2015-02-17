@@ -95,6 +95,8 @@ private typedef Results = {
 	private var unicodeScripts:Array<ScriptData> = [];
 	private var unicodeCategories:Array<String> = [];
 	
+	private var characters:Int = 0;
+	
 	public function new(args:Array<String>) {
 		@:cmd _;
 		
@@ -243,23 +245,24 @@ private typedef Results = {
 	}
 	
 	private function buildJson(v:Results):String {
-		var counter = 0;
 		var sections = [];
 		
 		for (section in Reflect.fields(v)) {
-			counter = 0;
+			characters = 0;
 			
 			sections.push( 
 				'"$section":[\n\t' + 
-				(Reflect.field(v, section):Array<String>).map( function(s) {
-					if (counter <= 35) counter += '$s'.length + 6;
-					return (counter > 35? { counter = 0; '\n\t'; } :'') + (Std.is(s, Int)? '$s' : '"$s"');
-				} ).join(', ') + 
-				'\n]' 
+				(Reflect.field(v, section):Array<String>).map( printable ).join(', ') + 
+				'\n]'
 			);
 		}
 		
 		return '{\n' + sections.join( ',\n' ) + '\n}';
+	}
+	
+	private function printable(s:String):String {
+		if (characters <= 35) characters += '$s'.length + 6;
+		return (characters > 35? { characters = 0; '\n\t'; } :'') + (Std.is(s, Int)? '$s' : '"$s"');
 	}
 	
 	private static function load(path:String):String {
@@ -274,7 +277,11 @@ private typedef Results = {
 	}
 	
 	private static function sanitize(value:String):String {
-		return value.split('\n').filter( function(s) return !s.startsWith('#') && s.trim() != '' ).join(';');
+		return value.split('\n').filter( hash ).join(';');
+	}
+	
+	private static function hash(s:String) {
+		return !s.startsWith('#') && s.trim() != '';
 	}
 	
 }
