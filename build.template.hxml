@@ -1,0 +1,3 @@
+-debug
+-cp src
+--macro uhx.sys.seri.Builder.main()
