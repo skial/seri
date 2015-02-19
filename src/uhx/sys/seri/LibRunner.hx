@@ -1,5 +1,6 @@
 package uhx.sys.seri;
 
+import haxe.Serializer;
 import uhx.sys.Seri;
 import haxe.io.Input;
 import haxe.io.Output;
@@ -25,33 +26,17 @@ private typedef Information = {
 private typedef Group = {> Range, > Information,
 	
 }
-
-private typedef Results = {
-	@:optional var categories:Array<String>;
-	@:optional var scripts:Array<String>;
-	@:optional var blocks:Array<String>;
-	@:optional var codepoints:Array<Int>;
-}
  
 @:usage( 
 	'seri [options]',
 	'seri --help',
-	'seri --classes'
+	'seri --categories'
 )
 @:cmd class LibRunner implements Klas {
 
 	public static function main() {
 		var tool = new LibRunner( Sys.args() );
 	}
-	
-	@alias('v')
-	public var version:UnicodeVersion = '7.0.0';
-	
-	/**
-	 * The path which stores the Unicode database.
-	 */
-	@alias('r')
-	public var resource:String;
 	
 	/**
 	 * Returns all the code points for this category.
@@ -76,6 +61,22 @@ private typedef Results = {
 	 */
 	@alias('b')
 	public var blocks:Bool = false;
+	
+	/**
+	 * The path which stores the Unicode database.
+	 */
+	@alias('r')
+	public var resource:String;
+	
+	/**
+	 * The output format.
+	 */
+	@alias('f')
+	@:isVar public var format(default, set):Format = 'json';
+	
+		private function set_format(v:String):String {
+			return format = v.toLowerCase();
+		}
 	
 	private var _data:String = '';
 	private var _blocks:String = '';
@@ -103,7 +104,10 @@ private typedef Results = {
 		loadAll();
 		process();
 		
-		Sys.print( buildJson( buildResult() ) );
+		Sys.print( switch (format) {
+			case Format.Haxe: buildSerial( buildResult() );
+			case Format.Json | _: buildJson( buildResult() );
+		} );
 	}
 	
 	private function loadAll():Void {
@@ -236,7 +240,7 @@ private typedef Results = {
 		if (blocks && blockResults.length > 0) result.blocks = blockResults;
 		
 		if (codepointResults.length > 0) {
-			codepointResults.sort( function(a, b) return a > b ? 1 : a == b ? 0 : -1 );
+			codepointResults.sort( sortCodepoints );
 			result.codepoints = codepointResults;
 			
 		}
@@ -258,6 +262,10 @@ private typedef Results = {
 		}
 		
 		return '{\n' + sections.join( ',\n' ) + '\n}';
+	}
+	
+	private function buildSerial(v:Results):String {
+		return Serializer.run( v );
 	}
 	
 	private function printable(s:String):String {
@@ -282,6 +290,10 @@ private typedef Results = {
 	
 	private static function hash(s:String) {
 		return !s.startsWith('#') && s.trim() != '';
+	}
+	
+	private static function sortCodepoints(a:Int, b:Int):Int {
+		return a > b ? 1 : a == b ? 0 : -1;
 	}
 	
 }
