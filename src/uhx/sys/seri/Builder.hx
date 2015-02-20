@@ -67,15 +67,37 @@ class Builder {
 			var scripts = json.scripts;
 			var categories = json.categories;
 			var compiled = content
-				.replace("$version", 'v700')
-				.replace("$blocks", blocks.map( quoted ).join(', '))
-				.replace("$scripts", scripts.map( quoted ).join(', '))
-				.replace("$categories", categories.map( quoted ).join(', '));
+				.replace("$version", 'v700');
+				
+			compiled = compiled
+				.replace("$blocks", blocks.map( quoted ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t'));
+				
+			counter = 0;
+			compiled = compiled
+				.replace("$scripts", scripts.map( quoted ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t'));
+				
+			counter = 0;
+			compiled = compiled
+				.replace("$categories", categories.map( quoted ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t'));
 			
-			trace( compiled );
+			
+			if (!'${Sys.getCwd()}/src/uhx/sys/seri/v700/'.normalize().exists()) {
+				'${Sys.getCwd()}/src/uhx/sys/seri/v700/'.normalize().createDirectory();
+			}
+			'${Sys.getCwd()}/src/uhx/sys/seri/v700/Unicode.hx'.normalize().saveContent( compiled );
+			
 		}
 	}
 	
-	public function quoted(s:String):String return '"$s"';
+	public function quoted(s:String):String {
+		return '"$s"';
+	}
+	
+	public var counter:Int = 0;
+	
+	public function pretty(s:String):String {
+		counter += s.length;
+		return counter > 50 ? { counter = 0; '$s\n\t\t'; } : '$s';
+	}
 	
 }
