@@ -1,4 +1,4 @@
-package uhx.sys.seri.$version;
+package uhx.sys.seri.$package;
 
 /**
  * ...
