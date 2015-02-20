@@ -13,11 +13,6 @@ using sys.FileSystem;
  * @author Skial Bainn
  * Haitian Creole for range
  */
-
-@:enum abstract UnicodeVersion(String) from String to String {
-	public var v700 = '7.0.0';
-}
- 
 class Seri {
 	
 	/**
