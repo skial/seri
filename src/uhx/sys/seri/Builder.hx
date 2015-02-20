@@ -67,7 +67,10 @@ class Builder {
 			var scripts = json.scripts;
 			var categories = json.categories;
 			var compiled = content
-				.replace("$version", 'v700');
+				.replace("$package", 'v700');
+				
+			compiled = compiled
+				.replace("$version", '7.0.0');
 				
 			compiled = compiled
 				.replace("$blocks", blocks.map( quoted ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t'));
@@ -79,7 +82,6 @@ class Builder {
 			counter = 0;
 			compiled = compiled
 				.replace("$categories", categories.map( quoted ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t'));
-			
 			
 			if (!'${Sys.getCwd()}/src/uhx/sys/seri/v700/'.normalize().exists()) {
 				'${Sys.getCwd()}/src/uhx/sys/seri/v700/'.normalize().createDirectory();
