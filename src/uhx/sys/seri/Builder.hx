@@ -24,6 +24,8 @@ class Builder {
 		return macro { };
 	}
 
+	public var characters:Int = 0;
+	
 	public function new() {
 		var seri = '${Sys.getCwd()}/bin/seri.n'.normalize();
 		var template = '${Sys.getCwd()}/template/Unicode.hx'.normalize();
@@ -75,11 +77,11 @@ class Builder {
 			compiled = compiled
 				.replace("$blocks", blocks.map( quoted ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t'));
 				
-			counter = 0;
+			characters = 0;
 			compiled = compiled
 				.replace("$scripts", scripts.map( quoted ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t'));
 				
-			counter = 0;
+			characters = 0;
 			compiled = compiled
 				.replace("$categories", categories.map( quoted ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t'));
 			
@@ -95,11 +97,9 @@ class Builder {
 		return '"$s"';
 	}
 	
-	public var counter:Int = 0;
-	
 	public function pretty(s:String):String {
-		counter += s.length;
-		return counter > 50 ? { counter = 0; '$s\n\t\t'; } : '$s';
+		characters += s.length;
+		return characters > 50 ? { characters = 0; '$s\n\t\t'; } : '$s';
 	}
 	
 }
