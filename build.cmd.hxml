@@ -5,5 +5,12 @@
 -lib format
 -debug
 -cp src
--neko bin/seri.n
 -main uhx.sys.seri.LibRunner
+
+--each
+
+-neko bin/seri.n
+
+--next
+
+-neko run.n
