@@ -28,9 +28,9 @@ private typedef Group = {> Range, > Information,
 }
  
 @:usage( 
-	'seri [options]',
-	'seri --help',
-	'seri --categories'
+	'haxelib run seri [options]',
+	'haxelib run seri --help',
+	'haxelib run seri --categories'
 )
 @:cmd class LibRunner implements Klas {
 
@@ -61,6 +61,9 @@ private typedef Group = {> Range, > Information,
 	 */
 	@alias('b')
 	public var blocks:Bool = false;
+	
+	@alias('v')
+	public var version:Version = Seri.version;
 	
 	/**
 	 * The path which stores the Unicode database.
@@ -99,6 +102,8 @@ private typedef Group = {> Range, > Information,
 	private var characters:Int = 0;
 	
 	public function new(args:Array<String>) {
+		resource = '${Sys.getCwd()}/res/$version/'.normalize();
+		
 		@:cmd _;
 		
 		loadAll();
