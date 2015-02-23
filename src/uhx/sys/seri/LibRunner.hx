@@ -1,5 +1,6 @@
 package uhx.sys.seri;
 
+import haxe.ds.StringMap;
 import haxe.Serializer;
 import uhx.sys.Seri;
 import haxe.io.Input;
@@ -7,6 +8,7 @@ import haxe.io.Output;
 import sys.FileSystem;
 import format.gz.Reader;
 
+using Lambda;
 using StringTools;
 using sys.io.File;
 using haxe.io.Path;
@@ -42,7 +44,7 @@ private typedef Group = {> Range, > Information,
 	 * Returns all the code points for this category.
 	 */
 	@alias('c')
-	public var category:String;
+	public var category:Array<String> = [];
 	
 	/**
 	 * Returns all the unicode categories.
@@ -88,7 +90,7 @@ private typedef Group = {> Range, > Information,
 	private var blockResults:Array<String> = [];
 	private var scriptResults:Array<String> = [];
 	private var categoryResults:Array<String> = [];
-	private var codepointResults:Array<Int> = [];
+	private var codepointResults:StringMap<Array<Int>> = new StringMap();
 	
 	private var dataParts:Array<String> = [];
 	private var blockParts:Array<String> = [];
@@ -140,7 +142,7 @@ private typedef Group = {> Range, > Information,
 		processUnicodeData();
 		if (scripts || category != null) processScriptData();
 		if (blocks) processBlockData();
-		if (category != null && category.trim() != '' && category.length == 2) categoryCodepoints();
+		if (category != null && category.length > 0) for (c in category) categoryCodepoints( c );
 	}
 	
 	private function processUnicodeData():Void {
@@ -203,22 +205,30 @@ private typedef Group = {> Range, > Information,
 		}
 	}
 	
-	private function categoryCodepoints():Void {
+	private function categoryCodepoints(category:String):Void {
 		var range:Range;
-		for (script in unicodeScripts) if (script.category == category) {
-			range = script.range;
-			
-			if (range.min == range.max) {
-				codepointResults.push( range.min );
+		var results:Array<Int> = [];
+		
+		if (!codepointResults.exists( category )) {
+		
+			for (script in unicodeScripts) if (script.category == category) {
+				range = script.range;
 				
-			} else for (i in (range.min:Int)...((range.max:Int) + 1)) {
-				codepointResults.push( i );
-				
+				if (range.min == range.max) {
+					results.push( range.min );
+					
+				} else for (i in (range.min:Int)...((range.max:Int) + 1)) {
+					results.push( i );
+					
+				}
 			}
+			
+			codepointResults.set( category, results );
+			
 		}
 	}
 	
-	private function categoryLength():Int {
+	private function categoryLength(category:String):Int {
 		var range:Range;
 		var result = 0;
 		
@@ -243,12 +253,13 @@ private typedef Group = {> Range, > Information,
 		if (categoryResults.length > 0) result.categories = categoryResults;
 		if (scripts && scriptResults.length > 0) result.scripts = scriptResults;
 		if (blocks && blockResults.length > 0) result.blocks = blockResults;
-		
-		if (codepointResults.length > 0) {
-			codepointResults.sort( sortCodepoints );
-			result.codepoints = codepointResults;
-			
-		}
+		if (codepointResults.count() > 0) result.codepoints = [
+			for (k in codepointResults.keys()) {
+				codepointResults.get( k ).sort( sortCodepoints );
+				{ name:k, values:codepointResults.get( k ) };
+				
+			}
+		];
 		
 		return result;
 	}
