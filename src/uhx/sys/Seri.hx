@@ -1,8 +1,8 @@
 package uhx.sys;
 
-import haxe.ds.StringMap;
 import haxe.Json;
 import uhx.sys.seri.*;
+import haxe.ds.StringMap;
 
 #if sys
 import uhx.sys.Ioe;
@@ -26,6 +26,8 @@ using haxe.io.Path;
 using sys.FileSystem;
 #end
 
+using StringTools;
+
 /**
  * ...
  * @author Skial Bainn
@@ -43,6 +45,7 @@ using sys.FileSystem;
 	private static var printer:Printer = new Printer();
 	private static var process:Process;
 	private static var codepointCache:StringMap<Array<Expr>> = new StringMap();
+	public static var requestedCategories:StringMap<Array<String>> = new StringMap();
 	#end
 	
 	public static macro function getCategory(category:ExprOf<String>):ExprOf<Array<CodePoint>> {
@@ -51,26 +54,11 @@ using sys.FileSystem;
 			var value = printer.printExpr( category ).substring(1, 3);
 			var results = [];
 			
-			if (!codepointCache.exists( value )) {
-				// Open a new process to seri asking for all codepoints in `value`.
-				process = new Process('haxelib', ['run', 'seri', '-c', value]);
-				
-				// Let the Ioe instance handle the pipes.
-				ioe.process( process.stdout, process.stdin );
-				var json:Results = Json.parse( ioe.content );
-				
-				// The return value needs to be an expression.
-				results = json.codepoints.map( toExpression );
-				
-				// And store the expression as its never been fetched before.
-				codepointCache.set( value, results );
-				
-			} else {
-				results = codepointCache.get( value );
-				
-			}
+			if (requestedCategories.exists( version )) results = requestedCategories.get( version );
+			if (results.indexOf( value ) == -1) results.push( value );
 			
-			return macro $a { results };
+			requestedCategories.set( version, results );
+			return macro $p { ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode', 'codepoints', 'get'] }( $v{ value } );
 			
 		} else {
 			// If `category` was not a constant string, let the runtime method handle it.
