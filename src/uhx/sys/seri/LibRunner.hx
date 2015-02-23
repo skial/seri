@@ -265,28 +265,11 @@ private typedef Group = {> Range, > Information,
 	}
 	
 	private function buildJson(v:Results):String {
-		var sections = [];
-		
-		for (section in Reflect.fields(v)) {
-			characters = 0;
-			
-			sections.push( 
-				'"$section":[\n\t' + 
-				(Reflect.field(v, section):Array<String>).map( printable ).join(', ') + 
-				'\n]'
-			);
-		}
-		
-		return '{\n' + sections.join( ',\n' ) + '\n}';
+		return haxe.Json.stringify( v );
 	}
 	
 	private function buildSerial(v:Results):String {
 		return Serializer.run( v );
-	}
-	
-	private function printable(s:String):String {
-		if (characters <= 35) characters += '$s'.length + 6;
-		return (characters > 35? { characters = 0; '\n\t'; } :'') + (Std.is(s, Int)? '$s' : '"$s"');
 	}
 	
 	private static function load(path:String):String {
