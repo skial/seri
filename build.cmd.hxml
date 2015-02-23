@@ -13,4 +13,5 @@
 
 --next
 
+-D haxelib
 -neko run.n
