@@ -6,7 +6,7 @@ import uhx.sys.seri.Version;
  * ...
  * @author Skial Bainn
  */
-@:autoBuild( uhx.sys.seri.MacroBuilder.build("$version") )
+@:build( uhx.sys.seri.Build.macros("$version") )
 class Unicode {
 
 	public static var version:Version = "$version";
