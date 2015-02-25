@@ -1,12 +1,13 @@
 package uhx.sys.seri;
 
-import haxe.ds.StringMap;
-import haxe.Serializer;
+import uhx.sys.Ioe;
 import uhx.sys.Seri;
 import haxe.io.Input;
 import haxe.io.Output;
 import sys.FileSystem;
+import haxe.Serializer;
 import format.gz.Reader;
+import haxe.ds.StringMap;
 
 using Lambda;
 using StringTools;
@@ -20,13 +21,12 @@ using uhx.sys.seri.LibRunner;
  * @author Skial Bainn
  */
 
-private typedef Information = {
-	var name:String;
-	var category:String;
-}
-
-private typedef Group = {> Range, > Information,
-	
+@:forward @:enum abstract Information(String) from String to String {
+	public var all = 'all';
+	public var star = '*';
+	public var scripts = 'scripts';
+	public var blocks = 'blocks';
+	public var categories = 'categories';
 }
  
 @:usage( 
@@ -34,35 +34,36 @@ private typedef Group = {> Range, > Information,
 	'haxelib run seri --help',
 	'haxelib run seri --categories'
 )
-@:cmd class LibRunner implements Klas {
+@:cmd class LibRunner extends Ioe implements Klas {
 
 	public static function main() {
 		var tool = new LibRunner( Sys.args() );
+		tool.exit();
 	}
 	
 	/**
-	 * Returns all the code points for this category.
+	 * Returns a list of values.
 	 */
-	@alias('c')
-	public var category:Array<String> = [];
+	@alias('l')
+	public var list:Array<Information> = ['*'];
 	
 	/**
-	 * Returns all the unicode categories.
+	 * Returns all the code points.
 	 */
-	@alias('C')
-	public var categories:Bool = false;
+	@alias('c')
+	public var categories:Array<String> = [];
 	
 	/**
 	 * Returns all the unicode scripts.
 	 */
 	@alias('s')
-	public var scripts:Bool = false;
+	public var scripts:Array<String> = [];
 	
 	/**
 	 * Returns all the unicode blocks.
 	 */
 	@alias('b')
-	public var blocks:Bool = false;
+	public var blocks:Array<String> = [];
 	
 	@alias('v')
 	public var version:Version = Seri.version;
@@ -87,11 +88,6 @@ private typedef Group = {> Range, > Information,
 	private var _blocks:String = '';
 	private var _scripts:String = '';
 	
-	private var blockResults:Array<String> = [];
-	private var scriptResults:Array<String> = [];
-	private var categoryResults:Array<String> = [];
-	private var codepointResults:StringMap<Array<Int>> = new StringMap();
-	
 	private var dataParts:Array<String> = [];
 	private var blockParts:Array<String> = [];
 	private var scriptParts:Array<String> = [];
@@ -103,17 +99,29 @@ private typedef Group = {> Range, > Information,
 	
 	private var characters:Int = 0;
 	
+	private var response:Response = { codepoints: { } };
+	
+	private var hasAll:Bool = false;
+	private var hasBlock:Bool = false;
+	private var hasScript:Bool = false;
+	private var hasCategory:Bool = false;
+	
 	public function new(args:Array<String>) {
+		super();
 		resource = '${Sys.getCwd()}/res/$version/'.normalize();
 		
 		@:cmd _;
 		
-		loadAll();
-		process();
+		exitCode = ExitCode.ERRORS;
 		
-		Sys.print( switch (format) {
-			case Format.Haxe: buildSerial( buildResult() );
-			case Format.Json | _: buildJson( buildResult() );
+		loadAll();
+		setupAll();
+		processAll();
+		
+		exitCode = ExitCode.SUCCESS;
+		stdout.writeString( switch (format) {
+			case Format.Haxe: buildSerial();
+			case Format.Json | _: buildJson();
 		} );
 	}
 	
@@ -135,14 +143,28 @@ private typedef Group = {> Range, > Information,
 		blockParts = ( _blocks = '$resource/Blocks.txt.gz'.load().sanitize() ).split( ';' );
 	}
 	
-	private function process():Void {
-		var length = dataParts.length;
-		var index = 0;
+	private function setupAll():Void {
+		hasAll = list.indexOf( Information.all ) > -1 || list.indexOf( Information.star ) > -1;
+		hasBlock = list.indexOf( Information.blocks ) > -1;
+		hasScript = list.indexOf( Information.scripts ) > -1;
+		hasCategory = list.indexOf( Information.categories ) > -1;
 		
+		if (hasAll || hasBlock) response.blocks = [];
+		if (hasAll || hasScript) response.scripts = [];
+		if (hasAll || hasCategory) response.categories = [];
+		
+		if (hasAll || hasBlock || blocks.length > 0) response.codepoints.blocks = { };
+		if (hasAll || hasScript || scripts.length > 0) response.codepoints.scripts = { };
+		if (hasAll || hasCategory || categories.length > 0) response.codepoints.categories = { };
+	}
+	
+	private function processAll():Void {
 		processUnicodeData();
-		if (scripts || category != null) processScriptData();
-		if (blocks) processBlockData();
-		if (category != null && category.length > 0) for (c in category) categoryCodepoints( c );
+		if (hasAll || hasScript || scripts.length > 0 || categories.length > 0) processScriptData();
+		if (hasAll || hasBlock || blocks.length > 0) processBlockData();
+		
+		ifFor( hasAll || hasCategory || categories.length > 0, categories, categoryPoints );
+		ifFor( hasAll || hasScript || scripts.length > 0, scripts, scriptPoints );
 	}
 	
 	private function processUnicodeData():Void {
@@ -155,8 +177,8 @@ private typedef Group = {> Range, > Information,
 			unicodeData.push( data );
 			
 			// Builds an array of unicode classes.
-			if (categories && categoryResults.indexOf( data.category ) == -1) {
-				categoryResults.push( data.category );
+			if ((hasAll || hasCategory) && response.categories.indexOf( data.category ) == -1) {
+				response.categories.push( data.category );
 				
 			}
 			
@@ -175,8 +197,8 @@ private typedef Group = {> Range, > Information,
 			unicodeScripts.push( data );
 			
 			// Builds an array of unicode scripts.
-			if (scriptResults.indexOf( data.script ) == -1) {
-				scriptResults.push( data.script );
+			if ((hasAll || hasScript) && response.scripts.indexOf( data.script ) == -1) {
+				response.scripts.push( data.script );
 				
 			}
 			
@@ -195,8 +217,8 @@ private typedef Group = {> Range, > Information,
 			unicodeBlocks.push( data );
 			
 			// Builds an array of unicode blocks.
-			if (blockResults.indexOf( data.block ) == -1) {
-				blockResults.push( data.block );
+			if ((hasAll || hasBlock) && response.blocks.indexOf( data.block ) == -1) {
+				response.blocks.push( data.block );
 				
 			}
 			
@@ -205,11 +227,11 @@ private typedef Group = {> Range, > Information,
 		}
 	}
 	
-	private function categoryCodepoints(category:String):Void {
+	private function categoryPoints(category:String):Void {
 		var range:Range;
-		var results:Array<Int> = [];
+		var results:Array<CodePoint> = [];
 		
-		if (!codepointResults.exists( category )) {
+		if (!response.codepoints.categories.exists( category )) {
 		
 			for (script in unicodeScripts) if (script.category == category) {
 				range = script.range;
@@ -223,7 +245,53 @@ private typedef Group = {> Range, > Information,
 				}
 			}
 			
-			codepointResults.set( category, results );
+			response.codepoints.categories.set( category, results );
+			
+		}
+	}
+	
+	private function scriptPoints(script:String):Void {
+		var range:Range;
+		var results:Array<CodePoint> = [];
+		
+		if (!response.codepoints.scripts.exists( script )) {
+			
+			for (s in unicodeScripts) if (s.script == script) {
+				range = s.range;
+				
+				if (range.min == range.max) {
+					results.push( range.min );
+					
+				} else for (i in (range.min:Int)...((range.max:Int) + 1)) {
+					results.push( i );
+					
+				}
+			}
+			
+			response.codepoints.scripts.set( script, results );
+			
+		}
+	}
+	
+	private function blockPoints(block:String):Void {
+		var range:Range;
+		var results:Array<CodePoint> = [];
+		
+		if (!response.codepoints.blocks.exists( block )) {
+			
+			for (b in unicodeBlocks) if (b.block == block) {
+				range = b.range;
+				
+				if (range.min == range.max) {
+					results.push( range.min );
+					
+				} else for (i in (range.min:Int)...((range.max:Int) + 1)) {
+					results.push( i );
+					
+				}
+			}
+			
+			response.codepoints.blocks.set( block, results );
 			
 		}
 	}
@@ -247,29 +315,12 @@ private typedef Group = {> Range, > Information,
 		return result;
 	}
 	
-	private function buildResult():Results {
-		var result:Results = { };
-		
-		if (categoryResults.length > 0) result.categories = categoryResults;
-		if (scripts && scriptResults.length > 0) result.scripts = scriptResults;
-		if (blocks && blockResults.length > 0) result.blocks = blockResults;
-		if (codepointResults.count() > 0) result.codepoints = [
-			for (k in codepointResults.keys()) {
-				codepointResults.get( k ).sort( sortCodepoints );
-				{ name:k, values:codepointResults.get( k ) };
-				
-			}
-		];
-		
-		return result;
+	private function buildJson():String {
+		return haxe.Json.stringify( response );
 	}
 	
-	private function buildJson(v:Results):String {
-		return haxe.Json.stringify( v );
-	}
-	
-	private function buildSerial(v:Results):String {
-		return Serializer.run( v );
+	private function buildSerial():String {
+		return Serializer.run( response );
 	}
 	
 	private static function load(path:String):String {
@@ -293,6 +344,10 @@ private typedef Group = {> Range, > Information,
 	
 	private static function sortCodepoints(a:Int, b:Int):Int {
 		return a > b ? 1 : a == b ? 0 : -1;
+	}
+	
+	private static function ifFor<T>(bool:Bool, array:Array<T>, method:T->Void):Void {
+		if (bool) for (a in array) method(a);
 	}
 	
 }
