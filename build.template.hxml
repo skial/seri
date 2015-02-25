@@ -1,3 +1,5 @@
 -debug
 -cp src
---macro uhx.sys.seri.Builder.main()
+-lib cmd
+-lib unifill
+--macro uhx.sys.seri.Build.template()
