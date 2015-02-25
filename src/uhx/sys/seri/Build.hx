@@ -6,6 +6,7 @@ import uhx.sys.Ioe;
 import sys.io.Process;
 import haxe.macro.Type;
 import haxe.macro.Expr;
+import uhx.macro.KlasImp;
 import haxe.ds.StringMap;
 import haxe.macro.Printer;
 import haxe.macro.Context;
@@ -22,6 +23,17 @@ using sys.FileSystem;
  * @author Skial Bainn
  */
 @:access(uhx.sys.Ioe) class Build {
+	
+	private static function initialize() {
+		try {
+			KlasImp.initalize();
+			KlasImp.CLASS_META.set( ':unicode', Build.handler );
+		} catch (e:Dynamic) {
+			// This assumes that `implements Klas` is not being used
+			// but `@:autoBuild` or `@:build` metadata is being used 
+			// with the provided `uhx.sys.seri.Build.build()` method.
+		}
+	}
 	
 	public static var characters:Int = 0;
 	
@@ -78,18 +90,30 @@ using sys.FileSystem;
 		return characters > 50 ? { characters = 0; '$s\n\t\t'; } : '$s';
 	}
 	
-	public static function macros(version:Version):Array<Field> {
-		var fields = Context.getBuildFields();
+	public static function build():Array<Field> {
+        return handler(  Context.getLocalClass().get(), Context.getBuildFields() );
+	}
+	
+	public static function handler(cls:ClassType, fields:Array<Field>):Array<Field> {
+		var meta = cls.meta.get().filter(function(m) return m.name == ':unicode')[0];
+		
+		// Break early.
+		if (meta == null) return fields;
+		
+		var version = new Printer().printExprs( meta.params, ' ' );
+		version = version.substring(1, version.length - 1);
+		
 		var requests:StringMap<Array<String>> = Seri.requestedCategories;
 		var categories = requests.exists(version) ? requests.get(version) : [];
-		
+		trace( requests );
 		var ioe:Ioe = new Ioe();
 		var process = new Process('haxelib', ['run', 'seri', '-c', categories.join(' ')]);
 		ioe.process( process.stdout, process.stdin );
 		
-		var json:Response = Json.parse( ioe.content );
-		var codepoints = json.codepoints != null ? [for (key in json.codepoints.categories.keys()) macro $v { key } => $v { json.codepoints.categories.get( key ) } ] : [];
-		var scriptpoints = json.scripts != null ? [for (script in json.scripts) macro $v { [] } ] : [];
+		var response:Response = Json.parse( ioe.content );
+		
+		var codepoints = response.codepoints != null ? [for (key in response.codepoints.categories.keys()) macro $v { key } => $v { response.codepoints.categories.get( key ) } ] : [];
+		var scriptpoints = response.scripts != null ? [for (key in response.codepoints.scripts.keys()) macro $v { key } => $v { response.codepoints.scripts.get( key ) } ] : [];
 		
 		var td:TypeDefinition = macro class TemporarySeriUnicode {
 			public static var codePoints:haxe.ds.StringMap<Array<CodePoint>> = cast [$a { codepoints } ];
