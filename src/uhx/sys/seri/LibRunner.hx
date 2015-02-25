@@ -165,6 +165,7 @@ using uhx.sys.seri.LibRunner;
 		
 		ifFor( hasAll || hasCategory || categories.length > 0, categories, categoryPoints );
 		ifFor( hasAll || hasScript || scripts.length > 0, scripts, scriptPoints );
+		ifFor( hasAll || hasBlock || blocks.length > 0, blocks, blockPoints );
 	}
 	
 	private function processUnicodeData():Void {
@@ -233,7 +234,7 @@ using uhx.sys.seri.LibRunner;
 		
 		if (!response.codepoints.categories.exists( category )) {
 		
-			for (script in unicodeScripts) if (script.category == category) {
+			for (script in unicodeScripts) if (script.category == category || (category.length == 1 && script.category.startsWith(category))) {
 				range = script.range;
 				
 				if (range.min == range.max) {
