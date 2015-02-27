@@ -2,6 +2,7 @@ package uhx.sys.seri;
 
 import haxe.Json;
 import haxe.io.Eof;
+import haxe.macro.Compiler;
 import uhx.sys.Ioe;
 import sys.io.Process;
 import haxe.macro.Type;
@@ -27,11 +28,12 @@ using sys.FileSystem;
 	private static function initialize() {
 		try {
 			KlasImp.initalize();
-			KlasImp.CLASS_META.set( ':unicode', Build.handler );
+			KlasImp.RETYPE.set( ':unicode', Build.handler );
 		} catch (e:Dynamic) {
-			// This assumes that `implements Klas` is not being used
-			// but `@:autoBuild` or `@:build` metadata is being used 
-			// with the provided `uhx.sys.seri.Build.build()` method.
+			// This assumes that `implements Klas` is not being used,
+			// which in this case will fail. This macro relies on the 
+			// `retype` feature provided by `Klas`.
+			throw 'You need to include `-lib klas` in your build file';
 		}
 	}
 	
@@ -81,6 +83,67 @@ using sys.FileSystem;
 		return macro null;
 	}
 	
+	private static var cache = {
+		codepoints:new StringMap<Array<CodePoint>>(),
+		scriptpoints:new StringMap<Array<CodePoint>>(),
+		blockpoints:new StringMap<Array<CodePoint>>(),
+	}
+	
+	public static function handler(cls:ClassType, fields:Array<Field>):Null<TypeDefinition> {
+		var td:Null<TypeDefinition> = null;
+		var meta = cls.meta.get().filter(function(m) return m.name == ':unicode')[0];
+		
+		if (meta == null) return null;
+		
+		var version = quoteless( new Printer().printExprs( meta.params, ' ' ) );
+		
+		var requests:StringMap<Array<String>> = Seri.requestedCategories;
+		var categories = requests.exists(version) ? requests.get(version) : [];
+		
+		for (key in cache.codepoints.keys()) {
+			categories = categories.filter( function(v) return v != key );
+		}
+		
+		if (categories.length > 0) {
+			var ioe:Ioe = new Ioe();
+			var process = new Process('haxelib', ['run', 'seri', '-c', categories.join(' ')]);
+			ioe.process( process.stdout, process.stdin );
+			
+			var response:Response = Json.parse( ioe.content );
+			
+			var codepoints = response.codepoints != null ? [for (key in response.codepoints.categories.keys()) macro $v { key } => $v { response.codepoints.categories.get( key ) } ] : [];
+			var scriptpoints = response.scripts != null ? [for (key in response.codepoints.scripts.keys()) macro $v { key } => $v { response.codepoints.scripts.get( key ) } ] : [];
+			
+			fields = fields.filter( function(f) return ['codePoints', 'scriptPoints', 'blockPoints'].indexOf( f.name ) == -1 );
+			// Add the cached results.
+			for (key in cache.codepoints.keys()) codepoints.push( macro $v { key } => $v { cache.codepoints.get( key ) } );
+			for (key in cache.scriptpoints.keys()) codepoints.push( macro $v { key } => $v { cache.scriptpoints.get( key ) } );
+			
+			td = macro class Fromuhx_sys_seri_Build {
+				public static var codePoints:haxe.ds.StringMap<Array<CodePoint>> = cast [$a { codepoints } ];
+				public static var scriptPoints:haxe.ds.StringMap<Array<CodePoint>> = cast [$a { scriptpoints } ];
+			}
+			
+			// Set/update the cache results.
+			for (key in response.codepoints.categories.keys()) cache.codepoints.set( key, response.codepoints.categories.get( key ) );
+			
+			process.close();
+			
+			td.meta = cls.meta.get();
+			td.pos = cls.pos;
+			td.pack = cls.pack;
+			td.name = cls.name;
+			td.fields = fields.concat( td.fields );
+			
+		}
+		
+		return td;
+	}
+	
+	public static function quoteless(v:String):String {
+		return v.substring(1, v.length - 1);
+	}
+	
 	public static function quoted(s:String):String {
 		return '"$s"';
 	}
@@ -88,42 +151,6 @@ using sys.FileSystem;
 	public static function pretty(s:String):String {
 		characters += s.length;
 		return characters > 50 ? { characters = 0; '$s\n\t\t'; } : '$s';
-	}
-	
-	public static function build():Array<Field> {
-        return handler(  Context.getLocalClass().get(), Context.getBuildFields() );
-	}
-	
-	public static function handler(cls:ClassType, fields:Array<Field>):Array<Field> {
-		var meta = cls.meta.get().filter(function(m) return m.name == ':unicode')[0];
-		
-		// Break early.
-		if (meta == null) return fields;
-		
-		var version = new Printer().printExprs( meta.params, ' ' );
-		version = version.substring(1, version.length - 1);
-		
-		var requests:StringMap<Array<String>> = Seri.requestedCategories;
-		var categories = requests.exists(version) ? requests.get(version) : [];
-		trace( requests );
-		var ioe:Ioe = new Ioe();
-		var process = new Process('haxelib', ['run', 'seri', '-c', categories.join(' ')]);
-		ioe.process( process.stdout, process.stdin );
-		
-		var response:Response = Json.parse( ioe.content );
-		
-		var codepoints = response.codepoints != null ? [for (key in response.codepoints.categories.keys()) macro $v { key } => $v { response.codepoints.categories.get( key ) } ] : [];
-		var scriptpoints = response.scripts != null ? [for (key in response.codepoints.scripts.keys()) macro $v { key } => $v { response.codepoints.scripts.get( key ) } ] : [];
-		
-		var td:TypeDefinition = macro class TemporarySeriUnicode {
-			public static var codePoints:haxe.ds.StringMap<Array<CodePoint>> = cast [$a { codepoints } ];
-			public static var scriptPoints:haxe.ds.StringMap<Array<CodePoint>> = cast [$a { scriptpoints } ];
-		}
-		
-		process.close();
-		fields = fields.concat( td.fields );
-		
-		return fields;
 	}
 	
 }
