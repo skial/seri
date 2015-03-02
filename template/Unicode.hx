@@ -15,8 +15,8 @@ class Unicode implements Klas {
 	public static var scripts:Array<String> = [$scripts];
 	public static var categories:Array<String> = [$categories];
 	
-	public static var codePoints:StringMap<Array<CodePoint>> = new StringMap();
-	public static var blockPoints:StringMap<Array<CodePoint>> = new StringMap();
-	public static var scriptPoints:StringMap<Array<CodePoint>> = new StringMap();
+	@:seri_modify public static var codePoints:StringMap<Array<CodePoint>> = new StringMap();
+	@:seri_modify public static var blockPoints:StringMap<Array<CodePoint>> = new StringMap();
+	@:seri_modify public static var scriptPoints:StringMap<Array<CodePoint>> = new StringMap();
 	
 }
