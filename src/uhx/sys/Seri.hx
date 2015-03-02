@@ -82,6 +82,8 @@ using StringTools;
 	}
 	
 	public static macro function getScript(script:ExprOf<String>):ExprOf<Array<CodePoint>> {
+		var result = macro Seri._getScript( $script );
+		
 		if (script.expr.match(EConst(CString(_)))) {
 			
 			var value = printer.printExpr( script );
@@ -92,13 +94,16 @@ using StringTools;
 			if (results.indexOf( value ) == -1) results.push( value );
 			
 			requestedScripts.set( version, results );
-			return macro $p { ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode', 'scriptsPoints', 'get'] }( $v{ value } );
 			
-		} else {
-			// If `category` was not a constant string, let the runtime method handle it.
-			return macro Seri._getScript($script);
+			// Trigger a rebuild of Unicode.hx
+			KlasImp.retype( ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode'].join('.'), ':unicode' );
+			
+			// Bypass `Seri._getScript`.
+			result = macro $p { ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode', 'scriptsPoints', 'get'] }( $v{ value } );
 			
 		}
+		
+		return result;
 	}
 	
 	public static function _getScript(script:String):Array<CodePoint> {
