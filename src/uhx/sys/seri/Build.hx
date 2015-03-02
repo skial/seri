@@ -1,8 +1,9 @@
 package uhx.sys.seri;
 
+import haxe.Constraints.IMap;
+import haxe.DynamicAccess;
 import haxe.Json;
 import haxe.io.Eof;
-import haxe.macro.Compiler;
 import uhx.sys.Ioe;
 import sys.io.Process;
 import haxe.macro.Type;
@@ -11,9 +12,11 @@ import uhx.macro.KlasImp;
 import haxe.ds.StringMap;
 import haxe.macro.Printer;
 import haxe.macro.Context;
+import haxe.macro.Compiler;
 import uhx.sys.seri.Version;
 import uhx.sys.seri.CodePoint;
 
+using Lambda;
 using StringTools;
 using sys.io.File;
 using haxe.io.Path;
@@ -106,22 +109,40 @@ using sys.FileSystem;
 		
 		if (categories.length > 0) {
 			var ioe:Ioe = new Ioe();
+			var codepoints = [];
+			var scriptpoints = [];
+			var blockpoints = [];
+			var response:Response = { };
+			var stype = macro :Array<CodePoint>;
+			var type = macro :haxe.ds.StringMap<$stype>;
+			var _default = macro new haxe.ds.StringMap<$stype>();
 			var process = new Process('haxelib', ['run', 'seri', '-c', categories.join(' ')]);
+			
 			ioe.process( process.stdout, process.stdin );
+			response = Json.parse( ioe.content );
 			
-			var response:Response = Json.parse( ioe.content );
+			if (response.codepoints != null) {
+				codepoints = [for (key in response.codepoints.categories.keys()) macro $v { key }=> $v { response.codepoints.categories.get(key) } ];
+				scriptpoints = [for (key in response.codepoints.scripts.keys()) macro $v { key }=> $v { response.codepoints.scripts.get(key) } ];
+				blockpoints = [for (key in response.codepoints.blocks.keys()) macro $v { key }=> $v { response.codepoints.blocks.get(key) } ];
+				
+			}
 			
-			var codepoints = response.codepoints != null ? [for (key in response.codepoints.categories.keys()) macro $v { key } => $v { response.codepoints.categories.get( key ) } ] : [];
-			var scriptpoints = response.scripts != null ? [for (key in response.codepoints.scripts.keys()) macro $v { key } => $v { response.codepoints.scripts.get( key ) } ] : [];
+			// Filter out fields with `@:seri_modify` metadata.
+			fields = fields.filter( function(f) return f.meta == null ? true : !f.meta.exists( function(m) return m.name == ':seri_modify' ) );
 			
-			fields = fields.filter( function(f) return ['codePoints', 'scriptPoints', 'blockPoints'].indexOf( f.name ) == -1 );
 			// Add the cached results.
 			for (key in cache.codepoints.keys()) codepoints.push( macro $v { key } => $v { cache.codepoints.get( key ) } );
-			for (key in cache.scriptpoints.keys()) codepoints.push( macro $v { key } => $v { cache.scriptpoints.get( key ) } );
+			for (key in cache.scriptpoints.keys()) scriptpoints.push( macro $v { key } => $v { cache.scriptpoints.get( key ) } );
+			for (key in cache.blockpoints.keys()) blockpoints.push( macro $v { key } => $v { cache.blockpoints.get( key ) } );
 			
+			// The reason for casting is that StringMap and Map are not unifing.
+			// If typed as `Map<String, $stype>`, then the map comprehension
+			// generates insane output, which the analyser doesnt currently fix.
 			td = macro class Fromuhx_sys_seri_Build {
-				public static var codePoints:haxe.ds.StringMap<Array<CodePoint>> = cast [$a { codepoints } ];
-				public static var scriptPoints:haxe.ds.StringMap<Array<CodePoint>> = cast [$a { scriptpoints } ];
+				@:seri_modify public static var codePoints:$type = $e { codepoints.length > 0 ? macro cast $a { codepoints } : _default };
+				@:seri_modify public static var scriptPoints:$type = $e { scriptpoints.length > 0 ? macro cast $a { scriptpoints } : _default };
+				@:seri_modify public static var blockPoints:$type = $e { blockpoints.length > 0 ? macro cast $a { blockpoints } : _default };
 			}
 			
 			// Set/update the cache results.
