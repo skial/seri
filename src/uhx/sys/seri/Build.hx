@@ -27,7 +27,7 @@ using sys.FileSystem;
 	
 	private static function initialize() {
 		try {
-			KlasImp.initalize();
+			KlasImp.initialize();
 			KlasImp.RETYPE.set( ':unicode', Build.handler );
 		} catch (e:Dynamic) {
 			// This assumes that `implements Klas` is not being used,
