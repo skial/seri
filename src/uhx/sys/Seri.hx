@@ -52,6 +52,9 @@ using StringTools;
 	public static var requestedCategories:StringMap<Array<String>> = new StringMap();
 	#end
 	
+	#if display
+	public static function getCategory(category:String):Array<CodePoint> return [];
+	#else
 	public static macro function getCategory(category:ExprOf<String>):ExprOf<Array<CodePoint>> {
 		var result = macro Seri._getCategory( $category );
 		
@@ -76,11 +79,15 @@ using StringTools;
 		
 		return result;
 	}
+	#end
 	
 	public static function _getCategory(category:String):Array<CodePoint> {
 		return uhx.sys.seri.v700.Unicode.codePoints.get(category);
 	}
 	
+	#if display
+	public static function getScript(script:String):Array<CodePoint> return [];
+	#else
 	public static macro function getScript(script:ExprOf<String>):ExprOf<Array<CodePoint>> {
 		var result = macro Seri._getScript( $script );
 		
@@ -105,11 +112,15 @@ using StringTools;
 		
 		return result;
 	}
+	#end
 	
 	public static function _getScript(script:String):Array<CodePoint> {
 		return uhx.sys.seri.v700.Unicode.scriptPoints.get(script);
 	}
 	
+	#if display
+	public static function getBlock(block:String):Array<CodePoint> return [];
+	#else
 	public static macro function getBlock(block:ExprOf<String>):ExprOf<Array<CodePoint>> {
 		var result = macro Seri._getScript( $block );
 		
@@ -134,6 +145,7 @@ using StringTools;
 		
 		return result;
 	}
+	#end
 	
 	public static function _getBlock(block:String):Array<CodePoint> {
 		return uhx.sys.seri.v700.Unicode.blockPoints.get(block);
