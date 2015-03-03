@@ -99,7 +99,7 @@ using StringTools;
 			KlasImp.retype( ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode'].join('.'), ':unicode' );
 			
 			// Bypass `Seri._getScript`.
-			result = macro $p { ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode', 'scriptsPoints', 'get'] }( $v{ value } );
+			result = macro $p { ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode', 'scriptPoints', 'get'] }( $v{ value } );
 			
 		}
 		
@@ -107,7 +107,36 @@ using StringTools;
 	}
 	
 	public static function _getScript(script:String):Array<CodePoint> {
-		return [];
+		return uhx.sys.seri.v700.Unicode.scriptPoints.get(script);
+	}
+	
+	public static macro function getBlock(block:ExprOf<String>):ExprOf<Array<CodePoint>> {
+		var result = macro Seri._getScript( $block );
+		
+		if (block.expr.match(EConst(CString(_)))) {
+			
+			var value = printer.printExpr( block );
+			value = value.substring(1, value.length - 1);
+			var results = [];
+			
+			if (requestedBlocks.exists( version )) results = requestedBlocks.get( version );
+			if (results.indexOf( value ) == -1) results.push( value );
+			
+			requestedBlocks.set( version, results );
+			
+			// Trigger a rebuild of Unicode.hx
+			KlasImp.retype( ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode'].join('.'), ':unicode' );
+			
+			// Bypass `Seri._getBlock`.
+			result = macro $p { ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode', 'blockPoints', 'get'] }( $v{ value } );
+			
+		}
+		
+		return result;
+	}
+	
+	public static function _getBlock(block:String):Array<CodePoint> {
+		return uhx.sys.seri.v700.Unicode.blockPoints.get(block);
 	}
 	
 	private static function get_version():String {
