@@ -94,21 +94,23 @@ using sys.FileSystem;
 	
 	public static function handler(cls:ClassType, fields:Array<Field>):Null<TypeDefinition> {
 		var td:Null<TypeDefinition> = null;
+		var argF = function(v:String, k:String):Bool return v != k;
 		var meta = cls.meta.get().filter(function(m) return m.name == ':unicode')[0];
 		
 		if (meta == null) return null;
 		
 		var version = quoteless( new Printer().printExprs( meta.params, ' ' ) );
+		var requests = { categories: Seri.requestedCategories, scripts: Seri.requestedScripts, blocks: Seri.requestedBlocks }
+		var categories = requests.categories.exists(version) ? requests.categories.get(version) : [];
+		var scripts = requests.scripts.exists(version) ? requests.scripts.get(version) : [];
+		var blocks = requests.blocks.exists(version) ? requests.blocks.get(version) : [];
 		
-		var requests:StringMap<Array<String>> = Seri.requestedCategories;
-		var categories = requests.exists(version) ? requests.get(version) : [];
+		for (key in cache.codepoints.keys()) categories = categories.filter( argF.bind(_, key) );
+		for (key in cache.scriptpoints.keys()) scripts = scripts.filter( argF.bind(_, key) );
+		for (key in cache.blockpoints.keys()) blocks = blocks.filter( argF.bind(_, key) );
 		
-		for (key in cache.codepoints.keys()) {
-			categories = categories.filter( function(v) return v != key );
-		}
-		
-		if (categories.length > 0) {
-			var ioe:Ioe = new Ioe();
+		if (categories.length > 0 || scripts.length > 0 || blocks.length > 0) {
+			var ioe = new Ioe();
 			var codepoints = [];
 			var scriptpoints = [];
 			var blockpoints = [];
@@ -116,11 +118,15 @@ using sys.FileSystem;
 			var stype = macro :Array<CodePoint>;
 			var type = macro :haxe.ds.StringMap<$stype>;
 			var _default = macro new haxe.ds.StringMap<$stype>();
-			var process = new Process('haxelib', ['run', 'seri', '-c', categories.join(' ')]);
+			var arguments = ['run', 'seri', '-l', '_'];
+			if (categories.length > 0) arguments = arguments.concat( ['-c', categories.join(' ')] );
+			if (scripts.length > 0) arguments = arguments.concat( ['-s', scripts.join(' ')] );
+			if (blocks.length > 0) arguments = arguments.concat( ['-b', blocks.join(' ')] );
+			var process = new Process('haxelib', arguments);
 			
 			ioe.process( process.stdout, process.stdin );
 			response = Json.parse( ioe.content );
-			
+			trace( ioe.content );
 			if (response.codepoints != null) {
 				codepoints = [for (key in response.codepoints.categories.keys()) macro $v { key }=> $v { response.codepoints.categories.get(key) } ];
 				scriptpoints = [for (key in response.codepoints.scripts.keys()) macro $v { key }=> $v { response.codepoints.scripts.get(key) } ];
@@ -147,6 +153,8 @@ using sys.FileSystem;
 			
 			// Set/update the cache results.
 			for (key in response.codepoints.categories.keys()) cache.codepoints.set( key, response.codepoints.categories.get( key ) );
+			for (key in response.codepoints.scripts.keys()) cache.scriptpoints.set( key, response.codepoints.scripts.get( key ) );
+			for (key in response.codepoints.blocks.keys()) cache.blockpoints.set( key, response.codepoints.blocks.get( key ) );
 			
 			process.close();
 			
