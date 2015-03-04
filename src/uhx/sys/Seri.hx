@@ -57,33 +57,42 @@ using StringTools;
 	#else
 	public static macro function getCategory(category:ExprOf<String>):ExprOf<Array<CodePoint>> {
 		var result = macro Seri._getCategory( $category );
+		var localVars = Context.getLocalTVars();
 		
-		if (category.expr.match(EConst(CString(_)))) {
-			// Turn the expression into a string, but remove the quotes. `"Zs"` => `Zs`.
-			var value = printer.printExpr( category );
-			value = value.substring(1, value.length - 1);
-			var results = [];
+		switch (category.expr) {
+			case EConst(CString(_)):
+				// Turn the expression into a string, but remove the quotes. `"Zs"` => `Zs`.
+				var value = printer.printExpr( category );
+				value = value.substring(1, value.length - 1);
+				var results = [];
+				
+				if (requestedCategories.exists( version )) results = requestedCategories.get( version );
+				if (results.indexOf( value ) == -1) results.push( value );
+				
+				requestedCategories.set( version, results );
+				
+				// Trigger a rebuild of Unicode.hx
+				KlasImp.retype( ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode'].join('.'), ':unicode' );
+				
+				// Bypass `Seri._getCategory`.
+				result = macro $p { ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode', 'codePoints', 'get'] }( $v{ value } );
 			
-			if (requestedCategories.exists( version )) results = requestedCategories.get( version );
-			if (results.indexOf( value ) == -1) results.push( value );
-			
-			requestedCategories.set( version, results );
-			
-			// Trigger a rebuild of Unicode.hx
-			KlasImp.retype( ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode'].join('.'), ':unicode' );
-			
-			// Bypass `Seri._getCategory`.
-			result = macro $p { ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode', 'codePoints', 'get'] }( $v{ value } );
-			
+			case EConst(CIdent(id)) if (localVars.exists( id )):
+				// I would like to _try_ and get the local vars value,
+				// if its constant, but being a macro method, nothing if
+				// fully typed.
+				
+			case _:
+				
 		}
 		
 		return result;
 	}
-	#end
 	
 	public static function _getCategory(category:String):Array<CodePoint> {
 		return uhx.sys.seri.v700.Unicode.codePoints.get(category);
 	}
+	#end
 	
 	#if display
 	public static function getScript(script:String):Array<CodePoint> return [];
@@ -112,11 +121,11 @@ using StringTools;
 		
 		return result;
 	}
-	#end
 	
 	public static function _getScript(script:String):Array<CodePoint> {
 		return uhx.sys.seri.v700.Unicode.scriptPoints.get(script);
 	}
+	#end
 	
 	#if display
 	public static function getBlock(block:String):Array<CodePoint> return [];
@@ -145,11 +154,11 @@ using StringTools;
 		
 		return result;
 	}
-	#end
 	
 	public static function _getBlock(block:String):Array<CodePoint> {
 		return uhx.sys.seri.v700.Unicode.blockPoints.get(block);
 	}
+	#end
 	
 	private static function get_version():String {
 		return version;
