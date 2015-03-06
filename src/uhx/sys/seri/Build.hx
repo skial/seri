@@ -21,6 +21,7 @@ using StringTools;
 using sys.io.File;
 using haxe.io.Path;
 using sys.FileSystem;
+using haxe.macro.MacroStringTools;
 
 /**
  * ...
@@ -31,7 +32,7 @@ using sys.FileSystem;
 	private static function initialize() {
 		try {
 			KlasImp.initialize();
-			KlasImp.RETYPE.set( ':unicode', Build.handler );
+			KlasImp.RETYPE.set( ':unicode', Build.rebuild );
 		} catch (e:Dynamic) {
 			// This assumes that `implements Klas` is not being used,
 			// which in this case will fail. This macro relies on the 
@@ -92,7 +93,7 @@ using sys.FileSystem;
 		blockpoints:new StringMap<Array<CodePoint>>(),
 	}
 	
-	public static function handler(cls:ClassType, fields:Array<Field>):Null<TypeDefinition> {
+	public static function rebuild(cls:ClassType, fields:Array<Field>):Null<TypeDefinition> {
 		var td:Null<TypeDefinition> = null;
 		var argF = function(v:String, k:String):Bool return v != k;
 		var meta = cls.meta.get().filter(function(m) return m.name == ':unicode')[0];
@@ -126,7 +127,7 @@ using sys.FileSystem;
 			
 			ioe.process( process.stdout, process.stdin );
 			response = Json.parse( ioe.content );
-			trace( ioe.content );
+			//trace( ioe.content );
 			if (response.codepoints != null) {
 				codepoints = [for (key in response.codepoints.categories.keys()) macro $v { key }=> $v { response.codepoints.categories.get(key) } ];
 				scriptpoints = [for (key in response.codepoints.scripts.keys()) macro $v { key }=> $v { response.codepoints.scripts.get(key) } ];
