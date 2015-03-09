@@ -120,14 +120,14 @@ using haxe.macro.MacroStringTools;
 			var type = macro :haxe.ds.StringMap<$stype>;
 			var _default = macro new haxe.ds.StringMap<$stype>();
 			var arguments = ['run', 'seri', '-l', '_'];
-			if (categories.length > 0) arguments = arguments.concat( ['-c', categories.join(' ')] );
-			if (scripts.length > 0) arguments = arguments.concat( ['-s', scripts.join(' ')] );
-			if (blocks.length > 0) arguments = arguments.concat( ['-b', blocks.join(' ')] );
+			if (categories.length > 0) arguments = arguments.concat( ['-c'].concat( categories ) );
+			if (scripts.length > 0) arguments = arguments.concat( ['-s'].concat( scripts ) );
+			if (blocks.length > 0) arguments = arguments.concat( ['-b'].concat( blocks ) );
 			var process = new Process('haxelib', arguments);
 			
 			ioe.process( process.stdout, process.stdin );
 			response = Json.parse( ioe.content );
-			//trace( ioe.content );
+			
 			if (response.codepoints != null) {
 				codepoints = [for (key in response.codepoints.categories.keys()) macro $v { key }=> $v { response.codepoints.categories.get(key) } ];
 				scriptpoints = [for (key in response.codepoints.scripts.keys()) macro $v { key }=> $v { response.codepoints.scripts.get(key) } ];
