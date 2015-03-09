@@ -135,19 +135,20 @@ using StringTools;
 	
 	private static function searchForVariable(type:Type, fields:Array<Field>, field:String, variable:String, callback:Expr->Expr):Void {
 		for (_field in fields) if (_field.name == field) switch (_field.kind) {
-			case FFun(method) if (method != null):
-				method.expr.iter( function (expr) switch (expr) {
-					case macro var $name = $value if (name == variable):
-						callback(value);
-						
-					case _:
-						
-						
-				} );
+			case FFun(method) if (method != null): method.expr.iter( matchVariable.bind(_, variable, callback) );
+			case _: 
+		}
+	}
+	
+	private static function matchVariable(expr:Expr, variable:String, callback:Expr->Expr):Void {
+		switch (expr) {
+			case macro var $name = $value if (name == variable):
+				callback(value);
 				
 			case _:
+				expr.iter( matchVariable.bind(_, variable, callback) );
 				
-		}
+		} 
 	}
 	#end
 	
