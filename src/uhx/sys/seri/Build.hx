@@ -147,7 +147,7 @@ using haxe.macro.MacroStringTools;
 			// If typed as `Map<String, $stype>`, then the map comprehension
 			// generates insane output, which the analyser doesnt currently fix.
 			td = macro class Fromuhx_sys_seri_Build {
-				@:seri_modify public static var codePoints:$type = $e { codepoints.length > 0 ? macro cast $a { codepoints } : _default };
+				@:seri_modify public static var categoryPoints:$type = $e { codepoints.length > 0 ? macro cast $a { codepoints } : _default };
 				@:seri_modify public static var scriptPoints:$type = $e { scriptpoints.length > 0 ? macro cast $a { scriptpoints } : _default };
 				@:seri_modify public static var blockPoints:$type = $e { blockpoints.length > 0 ? macro cast $a { blockpoints } : _default };
 			}
