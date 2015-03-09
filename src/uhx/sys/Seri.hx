@@ -19,12 +19,17 @@ import haxe.macro.Expr;
 import uhx.macro.KlasImp;
 import haxe.macro.Printer;
 import haxe.macro.Context;
+import haxe.macro.Compiler;
 #end
 
 #if sys
 using sys.io.File;
 using haxe.io.Path;
 using sys.FileSystem;
+#end
+
+#if macro
+using haxe.macro.ExprTools;
 #end
 
 using StringTools;
@@ -56,41 +61,11 @@ using StringTools;
 	public static function getCategory(category:String):Array<CodePoint> return [];
 	#else
 	public static macro function getCategory(category:ExprOf<String>):ExprOf<Array<CodePoint>> {
-		var result = macro Seri._getCategory( $category );
-		var localVars = Context.getLocalTVars();
-		
-		switch (category.expr) {
-			case EConst(CString(_)):
-				// Turn the expression into a string, but remove the quotes. `"Zs"` => `Zs`.
-				var value = printer.printExpr( category );
-				value = value.substring(1, value.length - 1);
-				var results = [];
-				
-				if (requestedCategories.exists( version )) results = requestedCategories.get( version );
-				if (results.indexOf( value ) == -1) results.push( value );
-				
-				requestedCategories.set( version, results );
-				
-				// Trigger a rebuild of Unicode.hx
-				KlasImp.retype( ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode'].join('.'), ':unicode' );
-				
-				// Bypass `Seri._getCategory`.
-				result = macro $p { ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode', 'codePoints', 'get'] }( $v{ value } );
-			
-			case EConst(CIdent(id)) if (localVars.exists( id )):
-				// I would like to _try_ and get the local vars value,
-				// if its constant, but being a macro method, nothing if
-				// fully typed.
-				
-			case _:
-				
-		}
-		
-		return result;
+		return processExpr( category, 'Category', requestedCategories );
 	}
 	
 	public static function _getCategory(category:String):Array<CodePoint> {
-		return uhx.sys.seri.v700.Unicode.codePoints.get(category);
+		return uhx.sys.seri.v700.Unicode.categoryPoints.get(category);
 	}
 	#end
 	
@@ -98,28 +73,7 @@ using StringTools;
 	public static function getScript(script:String):Array<CodePoint> return [];
 	#else
 	public static macro function getScript(script:ExprOf<String>):ExprOf<Array<CodePoint>> {
-		var result = macro Seri._getScript( $script );
-		
-		if (script.expr.match(EConst(CString(_)))) {
-			
-			var value = printer.printExpr( script );
-			value = value.substring(1, value.length - 1);
-			var results = [];
-			
-			if (requestedScripts.exists( version )) results = requestedScripts.get( version );
-			if (results.indexOf( value ) == -1) results.push( value );
-			
-			requestedScripts.set( version, results );
-			
-			// Trigger a rebuild of Unicode.hx
-			KlasImp.retype( ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode'].join('.'), ':unicode' );
-			
-			// Bypass `Seri._getScript`.
-			result = macro $p { ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode', 'scriptPoints', 'get'] }( $v{ value } );
-			
-		}
-		
-		return result;
+		return processExpr( script, 'Script', requestedScripts );
 	}
 	
 	public static function _getScript(script:String):Array<CodePoint> {
@@ -131,28 +85,7 @@ using StringTools;
 	public static function getBlock(block:String):Array<CodePoint> return [];
 	#else
 	public static macro function getBlock(block:ExprOf<String>):ExprOf<Array<CodePoint>> {
-		var result = macro Seri._getScript( $block );
-		
-		if (block.expr.match(EConst(CString(_)))) {
-			
-			var value = printer.printExpr( block );
-			value = value.substring(1, value.length - 1);
-			var results = [];
-			
-			if (requestedBlocks.exists( version )) results = requestedBlocks.get( version );
-			if (results.indexOf( value ) == -1) results.push( value );
-			
-			requestedBlocks.set( version, results );
-			
-			// Trigger a rebuild of Unicode.hx
-			KlasImp.retype( ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode'].join('.'), ':unicode' );
-			
-			// Bypass `Seri._getBlock`.
-			result = macro $p { ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode', 'blockPoints', 'get'] }( $v{ value } );
-			
-		}
-		
-		return result;
+		return processExpr( block, 'Block', requestedBlocks );
 	}
 	
 	public static function _getBlock(block:String):Array<CodePoint> {
@@ -170,6 +103,52 @@ using StringTools;
 	
 	#if macro
 	public static function toExpression<T>(v:T):Expr return macro $v { v };
+	
+	private static function processExpr(expr:Expr, topic:String, map:StringMap<Array<String>>):Expr {
+		var result = macro $p { ['Seri', '_get$topic'] } ( $expr );
+		var lVars = Context.getLocalTVars();
+		var lMethod = Context.getLocalMethod();
+		var lClass = '' + Context.getLocalClass();
+		var path = ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode'];
+		
+		switch (expr.expr) {
+			case EConst(CString(value)):
+				var results = map.exists( version ) ? map.get( version ) : [];
+				if (results.indexOf( value ) == -1) results.push( value );
+				
+				map.set( version, results );
+				
+				KlasImp.retype( path.join('.'), ':unicode' );
+				
+				result = macro $p { path.concat( [ '${topic.toLowerCase()}Points', 'get' ] ) } ($v { value } );
+				
+			case EConst(CIdent(id)) if (lVars.exists( id )):
+				KlasImp.inspect( lClass, searchForVariable.bind(_, _, lMethod, id, processExpr.bind(_, topic, map)) );
+				
+			case _:
+				
+				
+		}
+		
+		return result;
+	}
+	
+	private static function searchForVariable(type:Type, fields:Array<Field>, field:String, variable:String, callback:Expr->Expr):Void {
+		for (_field in fields) if (_field.name == field) switch (_field.kind) {
+			case FFun(method) if (method != null):
+				method.expr.iter( function (expr) switch (expr) {
+					case macro var $name = $value if (name == variable):
+						callback(value);
+						
+					case _:
+						
+						
+				} );
+				
+			case _:
+				
+		}
+	}
 	#end
 	
 }
