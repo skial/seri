@@ -18,4 +18,8 @@ package uhx.sys.seri;
 		return this.toInt();
 	}
 	
+	@:noCompletion @:to public inline function toString():String {
+		return this.toString();
+	}
+	
 }
