@@ -135,9 +135,9 @@ using haxe.macro.MacroStringTools;
 			response = Json.parse( ioe.content );
 			
 			if (response.codepoints != null) {
-				codepoints = [for (key in response.codepoints.categories.keys()) macro $v { key }=> $v { response.codepoints.categories.get(key) } ];
-				scriptpoints = [for (key in response.codepoints.scripts.keys()) macro $v { key }=> $v { response.codepoints.scripts.get(key) } ];
-				blockpoints = [for (key in response.codepoints.blocks.keys()) macro $v { key }=> $v { response.codepoints.blocks.get(key) } ];
+				for (key in response.codepoints.categories.keys()) codepoints.push( macro $v { key }=> $v { response.codepoints.categories.get(key) } );
+				for (key in response.codepoints.scripts.keys()) scriptpoints.push( macro $v { key }=> $v { response.codepoints.scripts.get(key) } );
+				for (key in response.codepoints.blocks.keys()) blockpoints.push( macro $v { key }=> $v { response.codepoints.blocks.get(key) } );
 				
 			}
 			
@@ -167,7 +167,7 @@ using haxe.macro.MacroStringTools;
 		td.pack = cls.pack;
 		td.name = cls.name;
 		td.fields = fields.concat( td.fields );
-		
+		//trace( new Printer().printTypeDefinition( td ) );
 		return td;
 	}
 	
