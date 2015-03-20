@@ -20,6 +20,7 @@ import uhx.macro.KlasImp;
 import haxe.macro.Printer;
 import haxe.macro.Context;
 import haxe.macro.Compiler;
+import uhx.macro.klas.TypeInfo;
 #end
 
 #if sys
