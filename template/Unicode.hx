@@ -8,7 +8,7 @@ import uhx.sys.seri.Version;
  * @author Skial Bainn
  */
 @:unicode("$version")
-class Unicode implements Klas {
+class Unicode {
 
 	public static var version:Version = "$version";
 	public static var blocks:Array<String> = [$blocks];
