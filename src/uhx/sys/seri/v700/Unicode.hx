@@ -8,7 +8,7 @@ import uhx.sys.seri.Version;
  * @author Skial Bainn
  */
 @:unicode("7.0.0")
-class Unicode implements Klas {
+class Unicode {
 
 	public static var version:Version = "7.0.0";
 	public static var blocks:Array<String> = ["Basic Latin", "Latin-1 Supplement", "Latin Extended-A",
