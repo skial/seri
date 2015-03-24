@@ -124,7 +124,6 @@ using StringTools;
 				
 				var parts = lClass.split('.');
 				
-				KlasImp.onRebuild.add( updateDependency.bind( { name:parts.pop(), pack:parts }, _ ) );
 				KlasImp.triggerRebuild( path.join('.'), ':unicode' );
 				
 				result = macro $p { path.concat( [ '${topic.toLowerCase()}Points', 'get' ] ) } ($v { value } );
@@ -138,13 +137,6 @@ using StringTools;
 		}
 		
 		return result;
-	}
-	
-	private static function updateDependency(cls:TypePath, info:TypeInfo):Void {
-		if (info.original.pack.toDotPath( info.original.name ) == 'uhx.sys.seri.v${version.replace(".", "")}.Unicode') {
-			KlasImp.generateBefore( info.current, cls );
-			
-		}
 	}
 	
 	private static function searchForVariable(type:Type, fields:Array<Field>, field:String, variable:String, callback:Expr->Expr):Void {
