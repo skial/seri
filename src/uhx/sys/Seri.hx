@@ -123,6 +123,8 @@ using StringTools;
 				result = macro $p { path.concat( [ '${topic.toLowerCase()}Points', 'get' ] ) } ($v { value } );
 				
 			case EConst(CIdent(id)) if (lVars.exists( id )):
+				// Look for variable declarations that might contain a constant 
+				// string value I can use to populate the Unicode class with.
 				KlasImp.inspect( lClass, searchForVariable.bind(_, _, lMethod, id, processExpr.bind(_, topic, map)) );
 				
 			case _:
@@ -148,7 +150,7 @@ using StringTools;
 			case _:
 				expr.iter( matchVariable.bind(_, variable, callback) );
 				
-		} 
+		}
 	}
 	#end
 	
