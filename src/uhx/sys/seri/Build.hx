@@ -118,9 +118,15 @@ using haxe.macro.MacroStringTools;
 		var _default = macro new haxe.ds.StringMap<$stype>();
 		
 		// Add the cached results.
-		for (key in cache.codepoints.keys()) codepoints.push( macro $v { key } => $v { cache.codepoints.get( key ) } );
-		for (key in cache.scriptpoints.keys()) scriptpoints.push( macro $v { key } => $v { cache.scriptpoints.get( key ) } );
-		for (key in cache.blockpoints.keys()) blockpoints.push( macro $v { key } => $v { cache.blockpoints.get( key ) } );
+		for (key in cache.codepoints.keys()) {
+			codepoints.push( macro $v { key } => $a { cache.codepoints.get( key ).map(toCodePointExpr) } );
+		}
+		for (key in cache.scriptpoints.keys()) {
+			scriptpoints.push( macro $v { key } => $a { cache.scriptpoints.get( key ).map(toCodePointExpr) } );
+		}
+		for (key in cache.blockpoints.keys()) {
+			blockpoints.push( macro $v { key } => $a { cache.blockpoints.get( key ).map(toCodePointExpr) } );
+		}
 		
 		if (categories.length > 0 || scripts.length > 0 || blocks.length > 0) {
 			var ioe = new Ioe();
@@ -135,9 +141,15 @@ using haxe.macro.MacroStringTools;
 			response = Json.parse( ioe.content );
 			
 			if (response.codepoints != null) {
-				for (key in response.codepoints.categories.keys()) codepoints.push( macro $v { key }=> $v { response.codepoints.categories.get(key) } );
-				for (key in response.codepoints.scripts.keys()) scriptpoints.push( macro $v { key }=> $v { response.codepoints.scripts.get(key) } );
-				for (key in response.codepoints.blocks.keys()) blockpoints.push( macro $v { key }=> $v { response.codepoints.blocks.get(key) } );
+				for (key in response.codepoints.categories.keys()) {
+					codepoints.push( macro $v { key } => $a { response.codepoints.categories.get(key).map(toCodePointExpr) } );
+				}
+				for (key in response.codepoints.scripts.keys()) {
+					scriptpoints.push( macro $v { key } => $a { response.codepoints.scripts.get(key).map(toCodePointExpr) } );
+				}
+				for (key in response.codepoints.blocks.keys()) {
+					blockpoints.push( macro $v { key } => $a { response.codepoints.blocks.get(key).map(toCodePointExpr) } );
+				}
 				
 			}
 			
@@ -157,9 +169,9 @@ using haxe.macro.MacroStringTools;
 		// If typed as `Map<String, $stype>`, then the map comprehension
 		// generates insane output, which the analyser doesnt currently fix.
 		td = macro class Fromuhx_sys_seri_Build {
-			@:seri_modify public static var categoryPoints:$type = $e { codepoints.length > 0 ? macro cast $a { codepoints } : _default };
-			@:seri_modify public static var scriptPoints:$type = $e { scriptpoints.length > 0 ? macro cast $a { scriptpoints } : _default };
-			@:seri_modify public static var blockPoints:$type = $e { blockpoints.length > 0 ? macro cast $a { blockpoints } : _default };
+			@:seri_modify public static var categoryPoints:$type = $e { codepoints.length > 0 ? macro $a { codepoints } : _default };
+			@:seri_modify public static var scriptPoints:$type = $e { scriptpoints.length > 0 ? macro $a { scriptpoints } : _default };
+			@:seri_modify public static var blockPoints:$type = $e { blockpoints.length > 0 ? macro $a { blockpoints } : _default };
 		}
 		
 		td.meta = cls.meta.get();
@@ -182,6 +194,10 @@ using haxe.macro.MacroStringTools;
 	public static function pretty(s:String):String {
 		characters += s.length;
 		return characters > 50 ? { characters = 0; '$s\n\t\t'; } : '$s';
+	}
+	
+	private static inline function toCodePointExpr(value:CodePoint):ExprOf<CodePoint> {
+		return macro uhx.sys.seri.CodePoint.fromInt($v { value.toInt() } );
 	}
 	
 }
