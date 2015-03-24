@@ -20,6 +20,7 @@ import uhx.macro.KlasImp;
 import haxe.macro.Printer;
 import haxe.macro.Context;
 import haxe.macro.Compiler;
+import uhx.macro.klas.TypeInfo;
 #end
 
 #if sys
@@ -30,6 +31,7 @@ using sys.FileSystem;
 
 #if macro
 using haxe.macro.ExprTools;
+using haxe.macro.MacroStringTools;
 #end
 
 using StringTools;
@@ -104,12 +106,14 @@ using StringTools;
 	#if macro
 	public static function toExpression<T>(v:T):Expr return macro $v { v };
 	
-	private static function processExpr(expr:Expr, topic:String, map:StringMap<Array<String>>):Expr {
+	@:access(uhx.macro.KlasImp) private static function processExpr(expr:Expr, topic:String, map:StringMap<Array<String>>):Expr {
 		var result = macro $p { ['Seri', '_get$topic'] } ( $expr );
 		var lVars = Context.getLocalTVars();
 		var lMethod = Context.getLocalMethod();
 		var lClass = '' + Context.getLocalClass();
 		var path = ['uhx', 'sys', 'seri', 'v${version.replace(".", "")}', 'Unicode'];
+		
+		KlasImp.initialize();
 		
 		switch (expr.expr) {
 			case EConst(CString(value)):
@@ -118,7 +122,9 @@ using StringTools;
 				
 				map.set( version, results );
 				
-				KlasImp.retype( path.join('.'), ':unicode' );
+				var parts = lClass.split('.');
+				
+				KlasImp.triggerRebuild( path.join('.'), ':unicode' );
 				
 				result = macro $p { path.concat( [ '${topic.toLowerCase()}Points', 'get' ] ) } ($v { value } );
 				
