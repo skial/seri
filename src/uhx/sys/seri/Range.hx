@@ -4,7 +4,12 @@ package uhx.sys.seri;
  * ...
  * @author Skial Bainn
  */
-typedef Range = {
-	var min:CodePoint;
-	var max:CodePoint;
+class Range {
+	public var min:CodePoint;
+	public var max:CodePoint;
+	
+	public inline function new (min:CodePoint, max:CodePoint) {
+		this.min = min;
+		this.max = max;
+	}
 }
