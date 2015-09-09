@@ -14,7 +14,7 @@ typedef Response = {
 }
 
 typedef Points = {
-	@:optional var blocks:DynamicAccess<Array<CodePoint>>;
-	@:optional var scripts:DynamicAccess<Array<CodePoint>>;
-	@:optional var categories:DynamicAccess<Array<CodePoint>>;
+	@:optional var blocks:DynamicAccess<Range>;
+	@:optional var scripts:DynamicAccess<Range>;
+	@:optional var categories:DynamicAccess<Array<Range>>;
 }
