@@ -1,7 +1,5 @@
 package uhx.sys.seri;
 
-import haxe.Constraints.IMap;
-import haxe.DynamicAccess;
 import haxe.Json;
 import haxe.io.Eof;
 import uhx.sys.Ioe;
@@ -10,10 +8,12 @@ import haxe.macro.Type;
 import haxe.macro.Expr;
 import uhx.macro.KlasImp;
 import haxe.ds.StringMap;
+import haxe.DynamicAccess;
 import haxe.macro.Printer;
 import haxe.macro.Context;
 import haxe.macro.Compiler;
 import uhx.sys.seri.Version;
+import haxe.Constraints.IMap;
 import uhx.sys.seri.CodePoint;
 
 using Lambda;
@@ -28,18 +28,6 @@ using haxe.macro.MacroStringTools;
  * @author Skial Bainn
  */
 @:access(uhx.sys.Ioe) class Build {
-	
-	private static function initialize() {
-		try {
-			KlasImp.initialize();
-			KlasImp.rebuild.set( ':unicode', Build.rebuild );
-		} catch (e:Dynamic) {
-			// This assumes that `implements Klas` is not being used,
-			// which in this case will fail. This macro relies on the 
-			// `retype` feature provided by `Klas`.
-			throw 'You need to include `-lib klas` in your build file';
-		}
-	}
 	
 	public static var characters:Int = 0;
 	
@@ -77,6 +65,57 @@ using haxe.macro.MacroStringTools;
 			characters = 0;
 			compiled = compiled
 				.replace("$categories", response.categories.map( quoted ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t'));
+				
+			var blockPoints = [];
+			var scriptPoints = [];
+			var categoryPoints = [];
+			var cmd = new Process('haxelib', 
+				['run', 'seri', '-r', '${Sys.getCwd()}/res/7.0.0/'.normalize(), 
+				'-l', '_', '-b'].concat( response.blocks )
+				.concat( ['-s'].concat( response.scripts ) )
+				.concat( ['-c'].concat( response.categories ) ) 
+			);
+			
+			ioe = new Ioe();
+			ioe.process( cmd.stdout, cmd.stdin );
+			var reply:Response = Json.parse( ioe.content );
+			
+			for (block in response.blocks) {
+				var range = reply.codepoints.blocks.get( block );
+				if (range != null) {
+					blockPoints.push( '"$block" => new Range(${range.min.toInt()}, ${range.max.toInt()})' );
+				}
+			}
+			
+			for (script in response.scripts) {
+				var range = reply.codepoints.scripts.get( script );
+				if (range != null) {
+					scriptPoints.push( '"$script" => new Range(${range.min.toInt()}, ${range.max.toInt()})' );
+				}
+			}
+			
+			characters = 0;
+			for (category in response.categories) {
+				var ranges = reply.codepoints.categories.get( category );
+				categoryPoints.push( '"$category" => [' 
+				+ ranges.map( function(r) return 'new Range(${r.min.toInt()}, ${r.max.toInt()})' ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t')
+				+ ']' );
+			}
+			
+			response.blocks = response.scripts = response.categories = null;
+			response.blocks = response.scripts = response.categories = [];
+			
+			characters = 0;
+			compiled = compiled
+				.replace("$blockPoints", '[' + blockPoints.map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t') + ']');
+				
+			characters = 0;
+			compiled = compiled
+				.replace("$scriptPoints", '[' + scriptPoints.map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t') + ']');
+				
+			characters = 0;
+			compiled = compiled
+				.replace("$categoryPoints", '[' + categoryPoints.map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t') + ']');
 			
 			if (!outputPath.exists()) outputPath.createDirectory();
 			'$outputPath/Unicode.hx'.normalize().saveContent( compiled );
@@ -85,102 +124,6 @@ using haxe.macro.MacroStringTools;
 		
 		// Something has to be returned :/
 		return macro null;
-	}
-	
-	private static var cache = {
-		codepoints:new StringMap<Array<CodePoint>>(),
-		scriptpoints:new StringMap<Array<CodePoint>>(),
-		blockpoints:new StringMap<Array<CodePoint>>(),
-	}
-	
-	public static function rebuild(cls:ClassType, fields:Array<Field>):Null<TypeDefinition> {
-		var td:Null<TypeDefinition> = null;
-		var argF = function(v:String, k:String):Bool return v != k;
-		var meta = cls.meta.get().filter(function(m) return m.name == ':unicode')[0];
-		
-		if (meta == null) return null;
-		
-		var version = quoteless( new Printer().printExprs( meta.params, ' ' ) );
-		var requests = { categories: Seri.requestedCategories, scripts: Seri.requestedScripts, blocks: Seri.requestedBlocks }
-		var categories = requests.categories.exists(version) ? requests.categories.get(version) : [];
-		var scripts = requests.scripts.exists(version) ? requests.scripts.get(version) : [];
-		var blocks = requests.blocks.exists(version) ? requests.blocks.get(version) : [];
-		
-		for (key in cache.codepoints.keys()) categories = categories.filter( argF.bind(_, key) );
-		for (key in cache.scriptpoints.keys()) scripts = scripts.filter( argF.bind(_, key) );
-		for (key in cache.blockpoints.keys()) blocks = blocks.filter( argF.bind(_, key) );
-		
-		var codepoints = [];
-		var scriptpoints = [];
-		var blockpoints = [];
-		var stype = macro :Array<CodePoint>;
-		var type = macro :haxe.ds.StringMap<$stype>;
-		var _default = macro new haxe.ds.StringMap<$stype>();
-		
-		// Add the cached results.
-		for (key in cache.codepoints.keys()) {
-			codepoints.push( macro $v { key } => $a { cache.codepoints.get( key ).map(toCodePointExpr) } );
-		}
-		for (key in cache.scriptpoints.keys()) {
-			scriptpoints.push( macro $v { key } => $a { cache.scriptpoints.get( key ).map(toCodePointExpr) } );
-		}
-		for (key in cache.blockpoints.keys()) {
-			blockpoints.push( macro $v { key } => $a { cache.blockpoints.get( key ).map(toCodePointExpr) } );
-		}
-		
-		if (categories.length > 0 || scripts.length > 0 || blocks.length > 0) {
-			var ioe = new Ioe();
-			var response:Response = { };
-			var arguments = ['run', 'seri', '-l', '_'];
-			if (categories.length > 0) arguments = arguments.concat( ['-c'].concat( categories ) );
-			if (scripts.length > 0) arguments = arguments.concat( ['-s'].concat( scripts ) );
-			if (blocks.length > 0) arguments = arguments.concat( ['-b'].concat( blocks ) );
-			var process = new Process('haxelib', arguments);
-			
-			ioe.process( process.stdout, process.stdin );
-			response = Json.parse( ioe.content );
-			
-			if (response.codepoints != null) {
-				for (key in response.codepoints.categories.keys()) {
-					codepoints.push( macro $v { key } => $a { response.codepoints.categories.get(key).map(toCodePointExpr) } );
-				}
-				for (key in response.codepoints.scripts.keys()) {
-					scriptpoints.push( macro $v { key } => $a { response.codepoints.scripts.get(key).map(toCodePointExpr) } );
-				}
-				for (key in response.codepoints.blocks.keys()) {
-					blockpoints.push( macro $v { key } => $a { response.codepoints.blocks.get(key).map(toCodePointExpr) } );
-				}
-				
-			}
-			
-			// Set/update the cache results.
-			for (key in response.codepoints.categories.keys()) cache.codepoints.set( key, response.codepoints.categories.get( key ) );
-			for (key in response.codepoints.scripts.keys()) cache.scriptpoints.set( key, response.codepoints.scripts.get( key ) );
-			for (key in response.codepoints.blocks.keys()) cache.blockpoints.set( key, response.codepoints.blocks.get( key ) );
-			
-			process.close();
-			
-		}
-		
-		// Filter out fields with `@:seri_modify` metadata.
-		fields = fields.filter( function(f) return f.meta == null ? true : !f.meta.exists( function(m) return m.name == ':seri_modify' ) );
-		
-		// The reason for casting is that StringMap and Map are not unifing.
-		// If typed as `Map<String, $stype>`, then the map comprehension
-		// generates insane output, which the analyser doesnt currently fix.
-		td = macro class Fromuhx_sys_seri_Build {
-			@:seri_modify public static var categoryPoints:$type = $e { codepoints.length > 0 ? macro $a { codepoints } : _default };
-			@:seri_modify public static var scriptPoints:$type = $e { scriptpoints.length > 0 ? macro $a { scriptpoints } : _default };
-			@:seri_modify public static var blockPoints:$type = $e { blockpoints.length > 0 ? macro $a { blockpoints } : _default };
-		}
-		
-		td.meta = cls.meta.get();
-		td.pos = cls.pos;
-		td.pack = cls.pack;
-		td.name = cls.name;
-		td.fields = fields.concat( td.fields );
-		//trace( new Printer().printTypeDefinition( td ) );
-		return td;
 	}
 	
 	public static function quoteless(v:String):String {

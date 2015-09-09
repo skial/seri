@@ -21,13 +21,8 @@ using StringTools;
 	
 	private inline function get_range():Range {
 		return this[0].indexOf('..') == -1 
-			? { 
-				min: '0x${this[0].trim()}'.parseInt(), 
-				max: '0x${this[0].trim()}'.parseInt() 
-			} : {
-				min: '0x${this[0].split("..")[0]}'.parseInt(),
-				max: '0x${this[0].split("..")[1].trim()}'.parseInt()
-			}
+			? new Range( '0x${this[0].trim()}'.parseInt(), '0x${this[0].trim()}'.parseInt() )
+			: new Range( '0x${this[0].split("..")[0]}'.parseInt(), '0x${this[0].split("..")[1].trim()}'.parseInt() );
 	}
 	
 	private inline function get_script():String {

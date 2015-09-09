@@ -10,7 +10,7 @@ package uhx.sys.seri;
 		this = v;
 	}
 	
-	@:noCompletion @:from public static inline function fromInt(v:Int):CodePoint {
+	@:access( unifill.CodePoint ) @:noCompletion @:from public static inline function fromInt(v:Int):CodePoint {
 		return new unifill.CodePoint( v );
 	}
 	

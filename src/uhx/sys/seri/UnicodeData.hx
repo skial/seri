@@ -1,5 +1,6 @@
 package uhx.sys.seri;
 
+using Std;
 using StringTools;
 
 /**
@@ -14,11 +15,11 @@ using StringTools;
 	
 	public inline function new(v:Array<String>) {
 		this = v;
-		if (v.length != 14) throw 'Each row of UnicodeData.txt should be 14 columns long, separated by a `;`.';
+		if (v.length != 15) throw 'Each row of UnicodeData.txt should be 14 columns long, but was ${v.length} separated by a `;`.';
 	}
 	
 	private inline function get_codepoint():CodePoint {
-		return Std.parseInt( '0x${this[0].trim()}' );
+		return CodePoint.fromInt( '0x${this[0]}'.parseInt() );
 	}
 	
 	private inline function get_name():String {

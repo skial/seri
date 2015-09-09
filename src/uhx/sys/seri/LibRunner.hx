@@ -34,7 +34,7 @@ using uhx.sys.seri.LibRunner;
 	'haxelib run seri --help',
 	'haxelib run seri --categories'
 )
-@:cmd class LibRunner extends Ioe implements Klas {
+@:cmd class LibRunner extends Ioe {
 
 	public static function main() {
 		var tool = new LibRunner( Sys.args() );
@@ -174,7 +174,7 @@ using uhx.sys.seri.LibRunner;
 		var length = dataParts.length;
 		
 		while (index < length - 1) {
-			data = dataParts.slice(index, index + 15);
+			data = new UnicodeData( dataParts.slice(index, index + 15) );
 			unicodeData.push( data );
 			
 			// Builds an array of unicode classes.
@@ -194,7 +194,7 @@ using uhx.sys.seri.LibRunner;
 		var length = scriptParts.length;
 		
 		while (index < length -1) {
-			data = scriptParts.slice(index, index + 4);
+			data = new ScriptData( scriptParts.slice(index, index + 4) );
 			unicodeScripts.push( data );
 			
 			// Builds an array of unicode scripts.
@@ -214,7 +214,7 @@ using uhx.sys.seri.LibRunner;
 		var length = blockParts.length;
 		
 		while (index < length - 1) {
-			data = blockParts.slice(index, index + 3);
+			data = new BlockData( blockParts.slice(index, index + 2) );
 			unicodeBlocks.push( data );
 			
 			// Builds an array of unicode blocks.
@@ -229,22 +229,23 @@ using uhx.sys.seri.LibRunner;
 	}
 	
 	private function categoryPoints(category:String):Void {
-		var range:Range;
-		var results:Array<CodePoint> = [];
-		
 		if (!response.codepoints.categories.exists( category )) {
-		
-			for (script in unicodeScripts) if (script.category == category || (category.length == 1 && script.category.startsWith(category))) {
-				range = script.range;
-				
-				if (range.min == range.max) {
-					results.push( range.min );
+			
+			var results = [];
+			var range = new Range( -1, -1 );
+			
+			for (c in unicodeData) if (c.category == category || (category.length == 1 && c.category.startsWith(category))) {
+				if (range.min == -1) range.min = range.max = c.codepoint;
+				if ((c.codepoint.toInt() - range.max.toInt()) <= 1) {
+					range.max = c.codepoint;
 					
-				} else for (i in (range.min:Int)...((range.max:Int) + 1)) {
-					results.push( i );
+				} else {
+					results.push( range );
+					range = new Range( c.codepoint, c.codepoint );
 					
 				}
 			}
+			results.push( range );
 			
 			response.codepoints.categories.set( category, results );
 			
@@ -252,47 +253,25 @@ using uhx.sys.seri.LibRunner;
 	}
 	
 	private function scriptPoints(script:String):Void {
-		var range:Range;
-		var results:Array<CodePoint> = [];
-		
 		if (!response.codepoints.scripts.exists( script )) {
 			
 			for (s in unicodeScripts) if (s.script == script) {
-				range = s.range;
+				response.codepoints.scripts.set( script, s.range );
+				break;
 				
-				if (range.min == range.max) {
-					results.push( range.min );
-					
-				} else for (i in (range.min:Int)...((range.max:Int) + 1)) {
-					results.push( i );
-					
-				}
 			}
-			
-			response.codepoints.scripts.set( script, results );
 			
 		}
 	}
 	
 	private function blockPoints(block:String):Void {
-		var range:Range;
-		var results:Array<CodePoint> = [];
-		
 		if (!response.codepoints.blocks.exists( block )) {
 			
 			for (b in unicodeBlocks) if (b.block == block) {
-				range = b.range;
+				response.codepoints.blocks.set( block, b.range );
+				break;
 				
-				if (range.min == range.max) {
-					results.push( range.min );
-					
-				} else for (i in (range.min:Int)...((range.max:Int) + 1)) {
-					results.push( i );
-					
-				}
 			}
-			
-			response.codepoints.blocks.set( block, results );
 			
 		}
 	}
