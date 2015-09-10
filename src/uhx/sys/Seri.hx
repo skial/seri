@@ -22,7 +22,7 @@ using StringTools;
 		return uhx.sys.seri.v700.Unicode.categoryPoints.get(category);
 	}
 	
-	public static function getScript(script:String):Null<Range> {
+	public static function getScript(script:String):Array<Range> {
 		return uhx.sys.seri.v700.Unicode.scriptPoints.get(script);
 	}
 	
