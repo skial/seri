@@ -160,6 +160,16 @@ using uhx.sys.seri.LibRunner;
 	
 	private function processAll():Void {
 		processUnicodeData();
+		// Add category single characters.
+		if (response.categories != null) {
+			var _categories = [];
+			for (c in response.categories) if (_categories.indexOf( c.charAt(0) ) == -1) {
+				_categories.push( c.charAt( 0 ) );
+			}
+			response.categories = _categories.concat( response.categories );
+			
+		}
+		
 		if (hasAll || hasScript || scripts.length > 0 || categories.length > 0) processScriptData();
 		if (hasAll || hasBlock || blocks.length > 0) processBlockData();
 		
