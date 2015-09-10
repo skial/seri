@@ -37,11 +37,23 @@ haxelib local master.zip
 Add seri to your `hxml` file by adding `-lib seri`. Then import seri
 by adding `import uhx.sys.Seri;` to your classes.
 
+## API
+
+### Seri API
+
 #### `Seri.getCategory(category:String):Array<Range>`
 
 #### `Seri.getScript(script:String):Null<Range>`
 
 #### `Seri.getBlock(block:String):Null<Range>`
+
+### Range API
+
+#### `Range::min:CodePoint`
+
+#### `Range::max:CodePoint`
+
+#### `Range::length:Int`
 
 [klas]: https://github.com/skial/klas
 [cmd]: https://github.com/skial/cmd
