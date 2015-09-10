@@ -21,8 +21,8 @@ class Unicode {
 	
 	public static var blockPoints:StringMap<Range> = $blockPoints;
 	
-	public static var scriptPoints:StringMap<Range> = $scriptPoints;
+	public static var scriptPoints:StringMap<Ranges> = $scriptPoints;
 	
-	public static var categoryPoints:StringMap<Array<Range>> = $categoryPoints;
+	public static var categoryPoints:StringMap<Ranges> = $categoryPoints;
 	
 }

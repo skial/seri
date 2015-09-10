@@ -255,11 +255,14 @@ using uhx.sys.seri.LibRunner;
 	private function scriptPoints(script:String):Void {
 		if (!response.codepoints.scripts.exists( script )) {
 			
+			var results = [];
+			
 			for (s in unicodeScripts) if (s.script == script) {
-				response.codepoints.scripts.set( script, s.range );
-				break;
+				results.push( s.range );
 				
 			}
+			
+			response.codepoints.scripts.set( script, results );
 			
 		}
 	}
