@@ -88,12 +88,6 @@ using haxe.macro.MacroStringTools;
 			unicodeCompiled = unicodeCompiled
 				.replace("$categories", response.categories.map( quoted ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t'));
 				
-			
-			/*var categories = [];
-			for (c in response.categories) if (categories.indexOf(c.charAt(0)) == -1) {
-				categories.push( c.charAt(0) );
-			}*/
-			
 			categoryCompiled = categoryCompiled
 				.replace("$categoryNames", response.categories.map( abstractEnum ).join('\n\t'));
 				
