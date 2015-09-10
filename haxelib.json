@@ -9,10 +9,8 @@
   "version": "0.0.1-alpha",
   "url": "https://github.com/skial/seri",
   "dependencies": {
-	"uhu":"",
     "klas":"",
 	"cmd":"",
-	"unifill":"",
-	"format":""
+	"unifill":""
   }
 }
