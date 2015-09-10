@@ -8,11 +8,12 @@ class Range {
 	public var min:CodePoint;
 	public var max:CodePoint;
 	
-	public var length(get, never):Int;
+	public var length(default, null):Int;
 	
 	public inline function new (min:CodePoint, max:CodePoint) {
 		this.min = min;
 		this.max = max;
+		this.length = (max - min) + 1;
 	}
 	
 	public inline function has(value:Int):Bool {
@@ -21,10 +22,6 @@ class Range {
 	
 	public function iterator():Iterator<CodePoint> {
 		return new RangeIterator( this );
-	}
-	
-	private function get_length():Int {
-		return (max - min) + 1;
 	}
 	
 }
