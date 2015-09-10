@@ -18,11 +18,11 @@ using StringTools;
 	 */
 	@:isVar public static var version(get, set):Version = '7.0.0';
 	
-	public static function getCategory(category:String):Array<Range> {
+	public static function getCategory(category:String):Null<Ranges> {
 		return uhx.sys.seri.v700.Unicode.categoryPoints.get(category);
 	}
 	
-	public static function getScript(script:String):Array<Range> {
+	public static function getScript(script:String):Null<Ranges> {
 		return uhx.sys.seri.v700.Unicode.scriptPoints.get(script);
 	}
 	
