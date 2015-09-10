@@ -89,17 +89,17 @@ using haxe.macro.MacroStringTools;
 			
 			for (script in response.scripts) {
 				var ranges = reply.codepoints.scripts.get( script );
-				scriptPoints.push( '"$script" => ['
+				scriptPoints.push( '"$script" => new Ranges(['
 				+ ranges.map( function(r) return 'new Range(${r.min.toInt()}, ${r.max.toInt()})' ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t')
-				+ ']' );
+				+ '])' );
 			}
 			
 			characters = 0;
 			for (category in response.categories) {
 				var ranges = reply.codepoints.categories.get( category );
-				categoryPoints.push( '"$category" => [' 
+				categoryPoints.push( '"$category" => new Ranges([' 
 				+ ranges.map( function(r) return 'new Range(${r.min.toInt()}, ${r.max.toInt()})' ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t')
-				+ ']' );
+				+ '])' );
 			}
 			
 			response.blocks = response.scripts = response.categories = null;
