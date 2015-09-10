@@ -30,6 +30,7 @@ using haxe.macro.MacroStringTools;
 @:access(uhx.sys.Ioe) class Build {
 	
 	public static var characters:Int = 0;
+	public static var maxCharacters:Int = 75;
 	
 	/**
 	 *  Usage:
@@ -65,6 +66,10 @@ using haxe.macro.MacroStringTools;
 			blockCompiled = blockCompiled.replace("$version", '7.0.0');
 			scriptCompiled = scriptCompiled.replace("$version", '7.0.0');
 			categoryCompiled = categoryCompiled.replace("$version", '7.0.0');
+			
+			response.blocks = alphaSort( response.blocks );
+			response.scripts = alphaSort( response.scripts );
+			response.categories = alphaSort( response.categories );
 				
 			unicodeCompiled = unicodeCompiled
 				.replace("$blocks", response.blocks.map( quoted ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t'));
@@ -83,6 +88,12 @@ using haxe.macro.MacroStringTools;
 			unicodeCompiled = unicodeCompiled
 				.replace("$categories", response.categories.map( quoted ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t'));
 				
+			
+			/*var categories = [];
+			for (c in response.categories) if (categories.indexOf(c.charAt(0)) == -1) {
+				categories.push( c.charAt(0) );
+			}*/
+			
 			categoryCompiled = categoryCompiled
 				.replace("$categoryNames", response.categories.map( abstractEnum ).join('\n\t'));
 				
@@ -93,32 +104,34 @@ using haxe.macro.MacroStringTools;
 				['run', 'seri', '-r', '${Sys.getCwd()}/res/7.0.0/'.normalize(), 
 				'-l', '_', '-b'].concat( response.blocks )
 				.concat( ['-s'].concat( response.scripts ) )
-				.concat( ['-c'].concat( response.categories ) ) 
+				.concat( ['-c'].concat( response.categories/*.filter( function(c) return c.length > 1 )*/ ) ) 
 			);
 			
 			ioe = new Ioe();
 			ioe.process( cmd.stdout, cmd.stdin );
 			var reply:Response = Json.parse( ioe.content );
 			
+			characters = 0;
 			for (block in response.blocks) {
 				var range = reply.codepoints.blocks.get( block );
 				if (range != null) {
-					blockPoints.push( '"$block" => new Range(${range.min.toInt()}, ${range.max.toInt()})' );
+					blockPoints.push( '"$block" => new S(${range.min.toInt()}, ${range.max.toInt()})' );
 				}
 			}
 			
+			characters = 0;
 			for (script in response.scripts) {
 				var ranges = reply.codepoints.scripts.get( script );
-				scriptPoints.push( '"$script" => new Ranges(['
-				+ ranges.map( function(r) return 'new Range(${r.min.toInt()}, ${r.max.toInt()})' ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t')
+				scriptPoints.push( '"$script" => new A(['
+				+ ranges.map( function(r) return 'new S(${r.min.toInt()}, ${r.max.toInt()})' ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t')
 				+ '])' );
 			}
 			
 			characters = 0;
 			for (category in response.categories) {
 				var ranges = reply.codepoints.categories.get( category );
-				categoryPoints.push( '"$category" => new Ranges([' 
-				+ ranges.map( function(r) return 'new Range(${r.min.toInt()}, ${r.max.toInt()})' ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t')
+				categoryPoints.push( '"$category" => new A([' 
+				+ ranges.map( function(r) return 'new S(${r.min.toInt()}, ${r.max.toInt()})' ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t')
 				+ '])' );
 			}
 			
@@ -159,7 +172,7 @@ using haxe.macro.MacroStringTools;
 	
 	public static function pretty(s:String):String {
 		characters += s.length;
-		return characters > 50 ? { characters = 0; '$s\n\t\t'; } : '$s';
+		return characters > maxCharacters ? { characters = 0; '$s\n\t\t'; } : '$s';
 	}
 	
 	public static function abstractEnum(s:String):String {
@@ -172,6 +185,48 @@ using haxe.macro.MacroStringTools;
 	
 	private static inline function toCodePointExpr(value:CodePoint):ExprOf<CodePoint> {
 		return macro uhx.sys.seri.CodePoint.fromInt($v { value.toInt() } );
+	}
+	
+	private static function alphaSort(values:Array<String>) {
+		var unordered:Array<Array<String>> = [];
+		
+		// Split each value into chuncks of numbers and strings.
+		for (value in values) {
+			unordered.push( ~/[0-9]||[^0-9]/g.split( value ) );
+		}
+		
+		var ordered = [];
+		
+		unordered.sort( function(a, b) {
+			var x = 0;
+			// Make sure we run against the largest array.
+			var l = (a.length - b.length <= 0 ? a.length : b.length);
+			var t = 0;
+			
+			while (x < l) {
+				// Thanks http://www.davekoelle.com/files/alphanum.js
+				if (a[x] != b[x]) {
+					var c = Std.parseInt(a[x]);
+					var d = Std.parseInt(b[x]);
+					
+					if ('$c' == a[x] && '$d' == b[x]) {
+						return c - d;
+					} else {
+						return (a[x] > b[x]) ? 1 : -1;
+					}
+				}
+				x++;
+			}
+			
+			return a.length - b.length;
+		} );
+		
+		// Put the parts back together.
+		for (u in unordered) {
+			ordered.push( u.join('') );
+		}
+		
+		return ordered;
 	}
 	
 }
