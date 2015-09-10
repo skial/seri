@@ -39,7 +39,10 @@ using haxe.macro.MacroStringTools;
 	public static function template() {
 		var ioe = new Ioe();
 		var response:Response = { };
-		var templatePath = '${Sys.getCwd()}/template/Unicode.hx'.normalize();
+		var unicodePath = '${Sys.getCwd()}/template/Unicode.hx'.normalize();
+		var blockPath = '${Sys.getCwd()}/template/Block.hx'.normalize();
+		var scriptPath = '${Sys.getCwd()}/template/Script.hx'.normalize();
+		var categoryPath = '${Sys.getCwd()}/template/Category.hx'.normalize();
 		var outputPath = '${Sys.getCwd()}/src/uhx/sys/Seri/v700/'.normalize();
 		var process = new Process('haxelib', ['run', 'seri', '-r', '${Sys.getCwd()}/res/7.0.0/'.normalize(), '-l', '*']);
 		
@@ -47,24 +50,41 @@ using haxe.macro.MacroStringTools;
 		response = Json.parse( ioe.content );
 		process.close();
 		
-		if (templatePath.exists()) {
-			var content = templatePath.getContent();
-			var compiled = content
-				.replace("$package", 'v700');
+		if ([unicodePath, blockPath, scriptPath, categoryPath].exists( function(p) return p.exists() )) {
+			var unicodeContent = unicodePath.getContent();
+			var blockCompiled = blockPath.getContent();
+			var scriptCompiled = scriptPath.getContent();
+			var categoryCompiled = categoryPath.getContent();
+			
+			var unicodeCompiled = unicodeContent.replace("$package", 'v700');
+			var blockCompiled = blockCompiled.replace("$package", 'v700');
+			var scriptCompiled = scriptCompiled.replace("$package", 'v700');
+			var categoryCompiled = categoryCompiled.replace("$package", 'v700');
 				
-			compiled = compiled
-				.replace("$version", '7.0.0');
+			unicodeCompiled = unicodeCompiled.replace("$version", '7.0.0');
+			blockCompiled = blockCompiled.replace("$version", '7.0.0');
+			scriptCompiled = scriptCompiled.replace("$version", '7.0.0');
+			categoryCompiled = categoryCompiled.replace("$version", '7.0.0');
 				
-			compiled = compiled
+			unicodeCompiled = unicodeCompiled
 				.replace("$blocks", response.blocks.map( quoted ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t'));
 				
-			characters = 0;
-			compiled = compiled
-				.replace("$scripts", response.scripts.map( quoted ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t'));
+			blockCompiled = blockCompiled
+				.replace("$blockNames", response.blocks.map( abstractEnum ).join('\n\t'));
 				
 			characters = 0;
-			compiled = compiled
+			unicodeCompiled = unicodeCompiled
+				.replace("$scripts", response.scripts.map( quoted ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t'));
+				
+			scriptCompiled = scriptCompiled
+				.replace("$scriptNames", response.scripts.map( abstractEnum ).join('\n\t'));
+				
+			characters = 0;
+			unicodeCompiled = unicodeCompiled
 				.replace("$categories", response.categories.map( quoted ).map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t'));
+				
+			categoryCompiled = categoryCompiled
+				.replace("$categoryNames", response.categories.map( abstractEnum ).join('\n\t'));
 				
 			var blockPoints = [];
 			var scriptPoints = [];
@@ -106,19 +126,22 @@ using haxe.macro.MacroStringTools;
 			response.blocks = response.scripts = response.categories = [];
 			
 			characters = 0;
-			compiled = compiled
+			unicodeCompiled = unicodeCompiled
 				.replace("$blockPoints", '[' + blockPoints.map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t') + ']');
 				
 			characters = 0;
-			compiled = compiled
+			unicodeCompiled = unicodeCompiled
 				.replace("$scriptPoints", '[' + scriptPoints.map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t') + ']');
 				
 			characters = 0;
-			compiled = compiled
+			unicodeCompiled = unicodeCompiled
 				.replace("$categoryPoints", '[' + categoryPoints.map( pretty ).join(', ').replace('\n\t\t,', ',\n\t\t') + ']');
 			
 			if (!outputPath.exists()) outputPath.createDirectory();
-			'$outputPath/Unicode.hx'.normalize().saveContent( compiled );
+			'$outputPath/Unicode.hx'.normalize().saveContent( unicodeCompiled );
+			'$outputPath/Block.hx'.normalize().saveContent( blockCompiled );
+			'$outputPath/Script.hx'.normalize().saveContent( scriptCompiled );
+			'$outputPath/Category.hx'.normalize().saveContent( categoryCompiled );
 			
 		}
 		
@@ -137,6 +160,14 @@ using haxe.macro.MacroStringTools;
 	public static function pretty(s:String):String {
 		characters += s.length;
 		return characters > 50 ? { characters = 0; '$s\n\t\t'; } : '$s';
+	}
+	
+	public static function abstractEnum(s:String):String {
+		return 'public var ' + s.replace('_', ' ').replace('-', ' ').split(' ').map( uppercase1st ).join('') + ' = "$s";';
+	}
+	
+	public static function uppercase1st(s:String):String {
+		return s.fastCodeAt(0) >= 'a'.code && s.fastCodeAt(0) <= 'z'.code ? s.charAt(0).toUpperCase() + s.substring(1) : s;
 	}
 	
 	private static inline function toCodePointExpr(value:CodePoint):ExprOf<CodePoint> {
