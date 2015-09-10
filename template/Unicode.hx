@@ -1,7 +1,8 @@
 package uhx.sys.seri.$package;
 
 import haxe.ds.StringMap;
-import uhx.sys.seri.Range;
+import uhx.sys.seri.Range as S;
+import uhx.sys.seri.Ranges as A;
 import uhx.sys.seri.Version;
 
 /**
@@ -13,11 +14,17 @@ class Unicode {
 
 	public static var version:Version = "$version";
 	
-	public static var blocks:Array<String> = [$blocks];
+	public static var blocks:Array<String> = [
+		$blocks
+	];
 	
-	public static var scripts:Array<String> = [$scripts];
+	public static var scripts:Array<String> = [
+		$scripts
+	];
 	
-	public static var categories:Array<String> = [$categories];
+	public static var categories:Array<String> = [
+		$categories
+	];
 	
 	public static var blockPoints:StringMap<Range> = $blockPoints;
 	
