@@ -83,7 +83,7 @@ class Ranges {
 ```Haxe
 @:forward abstract CodePoint(unifill.CodePoint) from unifill.CodePoint to unifill.CodePoint {
 	public inline function new(v:unifill.CodePoint);
-	@:access( unifill.CodePoint ) @:from public static inline function fromInt(v:Int):CodePoint;
+	@:from public static inline function fromInt(v:Int):CodePoint;
 	@:to public inline function toInt():Int;
 	@:to public inline function toString():String;
 }
