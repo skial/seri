@@ -12,7 +12,7 @@ To use seri, you will need to install the following libraries.
 
 1. [klas] - `haxelib git klas https://github.com/skial/klas master src`
 2. [cmd] - `haxelib git cmd https://github.com/skial/cmd master src`
-3. unifill - `haxelib install unifill`
+3. [unifill] - `haxelib install unifill`
 
 ## Installation
 
@@ -39,21 +39,61 @@ by adding `import uhx.sys.Seri;` to your classes.
 
 ## API
 
-### Seri API
+### [Seri] API
 
-#### `Seri.getCategory(category:String):Array<Range>`
+```Haxe
+ class Seri {
+	public static function getCategory(category:String):Null<Ranges>;
+	public static function getScript(script:String):Null<Ranges>;
+	public static function getBlock(block:String):Null<Range>;
+}
+```
 
-#### `Seri.getScript(script:String):Null<Range>`
+### [Range] API
 
-#### `Seri.getBlock(block:String):Null<Range>`
+```Haxe
+class Range {
+	public var min:CodePoint;
+	public var max:CodePoint;
+	public var length(default, null):Int;
+	
+	public inline function new(min:CodePoint, max:CodePoint);	
+	public inline function has(value:Int):Bool;
+	public function iterator():Iterator<CodePoint>;
+}
+```
 
-### Range API
+### [Ranges] API
 
-#### `Range::min:CodePoint`
+```Haxe
+class Ranges {
+	public var ranges:Array<Range>;
+	public var min(default, null):CodePoint;
+	public var max(default, null):CodePoint;
+	public var length(default, null):Int;
+	
+	public inline function new(ranges:Array<Range>);
+	public inline function has(value:Int):Bool;
+	public function iterator():Iterator<CodePoint>;
+}
+```
 
-#### `Range::max:CodePoint`
+### [CodePoint] API
 
-#### `Range::length:Int`
+```Haxe
+@:forward abstract CodePoint(unifill.CodePoint) from unifill.CodePoint to unifill.CodePoint {
+	public inline function new(v:unifill.CodePoint);
+	@:from public static inline function fromInt(v:Int):CodePoint;
+	@:to public inline function toInt():Int;
+	@:to public inline function toString():String;
+}
+```
 
 [klas]: https://github.com/skial/klas
 [cmd]: https://github.com/skial/cmd
+[unifill]: https://github.com/mandel59/unifill
+	
+[Seri]: https://github.com/skial/seri/blob/master/src/uhx/sys/Seri.hx
+[Range]: https://github.com/skial/seri/blob/master/src/uhx/sys/seri/Range.hx
+[Ranges]: https://github.com/skial/seri/blob/master/src/uhx/sys/seri/Ranges.hx
+[CodePoint]: https://github.com/skial/seri/blob/master/src/uhx/sys/seri/CodePoint.hx
