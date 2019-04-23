@@ -2,40 +2,13 @@
 
 > Haitian Creole for range
 
-Seri provides convinence methods to Unicode data. Get codepoints for a
-specific Block, Script or Category. Also get an array of available Blocks,
+Seri provides convinence methods to Unicode data. Get the range of codepoints for a
+specific Block, Script or Category. Get an array of available Blocks,
 Scripts or Category identifiers.
-
-## Dependencies
-
-To use seri, you will need to install the following libraries.
-
-1. [klas] - `haxelib git klas https://github.com/skial/klas master src`
-2. [cmd] - `haxelib git cmd https://github.com/skial/cmd master src`
-3. [unifill] - `haxelib install unifill`
 
 ## Installation
 
-With haxelib git.
-	
-```hxml
-haxelib git seri https://github.com/skial/seri master src
-```
-
-With haxelib local.
-	
-```hxml
-# Download the archive.
-https://github.com/skial/seri/archive/master.zip
-
-# Install archive contents.
-haxelib local master.zip
-```
-
-## Usage
-
-Add seri to your `hxml` file by adding `-lib seri`. Then import seri
-by adding `import uhx.sys.Seri;` to your classes.
+Using [lix-pm](https://github.com/lix-pm/lix.client), just type `lix download`.
 
 ## API
 
@@ -43,9 +16,9 @@ by adding `import uhx.sys.Seri;` to your classes.
 
 ```Haxe
  class Seri {
-	public static function getCategory(category:String):Null<Ranges>;
-	public static function getScript(script:String):Null<Ranges>;
-	public static function getBlock(block:String):Null<Range>;
+	public static function getCategory(category:String):Ranges;
+	public static function getScript(script:String):Ranges;
+	public static function getBlock(block:String):Range;
 }
 ```
 
@@ -88,10 +61,6 @@ class Ranges {
 	@:to public inline function toString():String;
 }
 ```
-
-[klas]: https://github.com/skial/klas
-[cmd]: https://github.com/skial/cmd
-[unifill]: https://github.com/mandel59/unifill
 	
 [Seri]: https://github.com/skial/seri/blob/master/src/uhx/sys/Seri.hx
 [Range]: https://github.com/skial/seri/blob/master/src/uhx/sys/seri/Range.hx

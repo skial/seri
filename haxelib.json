@@ -1,16 +1,16 @@
 {
-  "name": "seri",
-  "license": "MIT",
-  "classPath": "src",
-  "tags": ["uhu", "uhx", "unicode", "information", "range"],
-  "description": "Query Unicode Information. Scripts, Blocks and Categories.",
-  "contributors": ["skial"],
-  "releasenote": "Initial Release",
-  "version": "0.0.1-alpha",
-  "url": "https://github.com/skial/seri",
-  "dependencies": {
-    "klas":"",
-	"cmd":"",
-	"unifill":""
-  }
+    "name": "seri",
+    "license": "MIT",
+    "classPath": "src",
+    "tags": ["uhu", "unicode", "information", "range"],
+    "description": "Query Unicode information for Scripts, Blocks and Categories.",
+    "contributors": ["skial"],
+    "releasenote": "Initial Release",
+    "version": "0.0.1-alpha",
+    "url": "https://github.com/skial/seri",
+    "dependencies": {
+        "unifill":"0.4.1",
+        "format":"3.4.2",
+        "tink_core":"1.21.0"
+    }
 }

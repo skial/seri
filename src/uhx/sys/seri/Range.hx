@@ -4,7 +4,10 @@ package uhx.sys.seri;
  * ...
  * @author Skial Bainn
  */
-class Range {
+@:structInit class Range {
+
+	public static var EMPTY = new Range(0, 0);
+
 	public var min:CodePoint;
 	public var max:CodePoint;
 	
@@ -26,7 +29,7 @@ class Range {
 	
 }
 
-private class RangeIterator {
+@:structInit private class RangeIterator {
 	
 	public var range:Range;
 	public var current:CodePoint;

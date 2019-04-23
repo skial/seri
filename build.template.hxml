@@ -1,5 +1,12 @@
--debug
--cp src
--lib cmd
 -lib unifill
---macro uhx.sys.seri.Build.template()
+-lib tink_core
+-lib format
+
+-cp src
+
+-debug
+-dce full
+-D eval-stack
+-D analyzer-optimize
+
+--macro uhx.sys.seri.builder.Extract.main()

@@ -1,4 +1,4 @@
-package uhx.sys.seri.v700;
+package uhx.sys.seri.v800;
 
 /**
     ------
@@ -10,7 +10,7 @@ package uhx.sys.seri.v700;
 import uhx.sys.seri.Range;
 import uhx.sys.seri.Ranges;
 
-@:unicode("7.0.0")
+@:unicode("8.0.0")
 enum abstract Block(String) {
     
     public var BasicLatin = "Basic Latin";
@@ -154,6 +154,7 @@ enum abstract Block(String) {
     public var MeeteiMayekExtensions = "Meetei Mayek Extensions";
     public var EthiopicExtendedA = "Ethiopic Extended-A";
     public var LatinExtendedE = "Latin Extended-E";
+    public var CherokeeSupplement = "Cherokee Supplement";
     public var MeeteiMayek = "Meetei Mayek";
     public var HangulSyllables = "Hangul Syllables";
     public var HangulJamoExtendedB = "Hangul Jamo Extended-B";
@@ -196,6 +197,7 @@ enum abstract Block(String) {
     public var ImperialAramaic = "Imperial Aramaic";
     public var Palmyrene = "Palmyrene";
     public var Nabataean = "Nabataean";
+    public var Hatran = "Hatran";
     public var Phoenician = "Phoenician";
     public var Lydian = "Lydian";
     public var MeroiticHieroglyphs = "Meroitic Hieroglyphs";
@@ -209,6 +211,7 @@ enum abstract Block(String) {
     public var InscriptionalPahlavi = "Inscriptional Pahlavi";
     public var PsalterPahlavi = "Psalter Pahlavi";
     public var OldTurkic = "Old Turkic";
+    public var OldHungarian = "Old Hungarian";
     public var RumiNumeralSymbols = "Rumi Numeral Symbols";
     public var Brahmi = "Brahmi";
     public var Kaithi = "Kaithi";
@@ -218,17 +221,21 @@ enum abstract Block(String) {
     public var Sharada = "Sharada";
     public var SinhalaArchaicNumbers = "Sinhala Archaic Numbers";
     public var Khojki = "Khojki";
+    public var Multani = "Multani";
     public var Khudawadi = "Khudawadi";
     public var Grantha = "Grantha";
     public var Tirhuta = "Tirhuta";
     public var Siddham = "Siddham";
     public var Modi = "Modi";
     public var Takri = "Takri";
+    public var Ahom = "Ahom";
     public var WarangCiti = "Warang Citi";
     public var PauCinHau = "Pau Cin Hau";
     public var Cuneiform = "Cuneiform";
     public var CuneiformNumbersAndPunctuation = "Cuneiform Numbers and Punctuation";
+    public var EarlyDynasticCuneiform = "Early Dynastic Cuneiform";
     public var EgyptianHieroglyphs = "Egyptian Hieroglyphs";
+    public var AnatolianHieroglyphs = "Anatolian Hieroglyphs";
     public var BamumSupplement = "Bamum Supplement";
     public var Mro = "Mro";
     public var BassaVah = "Bassa Vah";
@@ -243,6 +250,7 @@ enum abstract Block(String) {
     public var TaiXuanJingSymbols = "Tai Xuan Jing Symbols";
     public var CountingRodNumerals = "Counting Rod Numerals";
     public var MathematicalAlphanumericSymbols = "Mathematical Alphanumeric Symbols";
+    public var SuttonSignWriting = "Sutton SignWriting";
     public var MendeKikakui = "Mende Kikakui";
     public var ArabicMathematicalAlphabeticSymbols = "Arabic Mathematical Alphabetic Symbols";
     public var MahjongTiles = "Mahjong Tiles";
@@ -257,9 +265,11 @@ enum abstract Block(String) {
     public var AlchemicalSymbols = "Alchemical Symbols";
     public var GeometricShapesExtended = "Geometric Shapes Extended";
     public var SupplementalArrowsC = "Supplemental Arrows-C";
+    public var SupplementalSymbolsAndPictographs = "Supplemental Symbols and Pictographs";
     public var CJKUnifiedIdeographsExtensionB = "CJK Unified Ideographs Extension B";
     public var CJKUnifiedIdeographsExtensionC = "CJK Unified Ideographs Extension C";
     public var CJKUnifiedIdeographsExtensionD = "CJK Unified Ideographs Extension D";
+    public var CJKUnifiedIdeographsExtensionE = "CJK Unified Ideographs Extension E";
     public var CJKCompatibilityIdeographsSupplement = "CJK Compatibility Ideographs Supplement";
     public var Tags = "Tags";
     public var VariationSelectorsSupplement = "Variation Selectors Supplement";
@@ -408,6 +418,7 @@ enum abstract Block(String) {
         MeeteiMayekExtensions, 
         EthiopicExtendedA, 
         LatinExtendedE, 
+        CherokeeSupplement, 
         MeeteiMayek, 
         HangulSyllables, 
         HangulJamoExtendedB, 
@@ -450,6 +461,7 @@ enum abstract Block(String) {
         ImperialAramaic, 
         Palmyrene, 
         Nabataean, 
+        Hatran, 
         Phoenician, 
         Lydian, 
         MeroiticHieroglyphs, 
@@ -463,6 +475,7 @@ enum abstract Block(String) {
         InscriptionalPahlavi, 
         PsalterPahlavi, 
         OldTurkic, 
+        OldHungarian, 
         RumiNumeralSymbols, 
         Brahmi, 
         Kaithi, 
@@ -472,17 +485,21 @@ enum abstract Block(String) {
         Sharada, 
         SinhalaArchaicNumbers, 
         Khojki, 
+        Multani, 
         Khudawadi, 
         Grantha, 
         Tirhuta, 
         Siddham, 
         Modi, 
         Takri, 
+        Ahom, 
         WarangCiti, 
         PauCinHau, 
         Cuneiform, 
         CuneiformNumbersAndPunctuation, 
+        EarlyDynasticCuneiform, 
         EgyptianHieroglyphs, 
+        AnatolianHieroglyphs, 
         BamumSupplement, 
         Mro, 
         BassaVah, 
@@ -497,6 +514,7 @@ enum abstract Block(String) {
         TaiXuanJingSymbols, 
         CountingRodNumerals, 
         MathematicalAlphanumericSymbols, 
+        SuttonSignWriting, 
         MendeKikakui, 
         ArabicMathematicalAlphabeticSymbols, 
         MahjongTiles, 
@@ -511,9 +529,11 @@ enum abstract Block(String) {
         AlchemicalSymbols, 
         GeometricShapesExtended, 
         SupplementalArrowsC, 
+        SupplementalSymbolsAndPictographs, 
         CJKUnifiedIdeographsExtensionB, 
         CJKUnifiedIdeographsExtensionC, 
         CJKUnifiedIdeographsExtensionD, 
+        CJKUnifiedIdeographsExtensionE, 
         CJKCompatibilityIdeographsSupplement, 
         Tags, 
         VariationSelectorsSupplement, 
@@ -948,6 +968,9 @@ enum abstract Block(String) {
             case LatinExtendedE:
                 new Range(43824, 43887);
             
+            case CherokeeSupplement:
+                new Range(43888, 43967);
+            
             case MeeteiMayek:
                 new Range(43968, 44031);
             
@@ -1074,6 +1097,9 @@ enum abstract Block(String) {
             case Nabataean:
                 new Range(67712, 67759);
             
+            case Hatran:
+                new Range(67808, 67839);
+            
             case Phoenician:
                 new Range(67840, 67871);
             
@@ -1113,6 +1139,9 @@ enum abstract Block(String) {
             case OldTurkic:
                 new Range(68608, 68687);
             
+            case OldHungarian:
+                new Range(68736, 68863);
+            
             case RumiNumeralSymbols:
                 new Range(69216, 69247);
             
@@ -1140,6 +1169,9 @@ enum abstract Block(String) {
             case Khojki:
                 new Range(70144, 70223);
             
+            case Multani:
+                new Range(70272, 70319);
+            
             case Khudawadi:
                 new Range(70320, 70399);
             
@@ -1158,6 +1190,9 @@ enum abstract Block(String) {
             case Takri:
                 new Range(71296, 71375);
             
+            case Ahom:
+                new Range(71424, 71487);
+            
             case WarangCiti:
                 new Range(71840, 71935);
             
@@ -1170,8 +1205,14 @@ enum abstract Block(String) {
             case CuneiformNumbersAndPunctuation:
                 new Range(74752, 74879);
             
+            case EarlyDynasticCuneiform:
+                new Range(74880, 75087);
+            
             case EgyptianHieroglyphs:
                 new Range(77824, 78895);
+            
+            case AnatolianHieroglyphs:
+                new Range(82944, 83583);
             
             case BamumSupplement:
                 new Range(92160, 92735);
@@ -1215,6 +1256,9 @@ enum abstract Block(String) {
             case MathematicalAlphanumericSymbols:
                 new Range(119808, 120831);
             
+            case SuttonSignWriting:
+                new Range(120832, 121519);
+            
             case MendeKikakui:
                 new Range(124928, 125151);
             
@@ -1257,6 +1301,9 @@ enum abstract Block(String) {
             case SupplementalArrowsC:
                 new Range(129024, 129279);
             
+            case SupplementalSymbolsAndPictographs:
+                new Range(129280, 129535);
+            
             case CJKUnifiedIdeographsExtensionB:
                 new Range(131072, 173791);
             
@@ -1265,6 +1312,9 @@ enum abstract Block(String) {
             
             case CJKUnifiedIdeographsExtensionD:
                 new Range(177984, 178207);
+            
+            case CJKUnifiedIdeographsExtensionE:
+                new Range(178208, 183983);
             
             case CJKCompatibilityIdeographsSupplement:
                 new Range(194560, 195103);

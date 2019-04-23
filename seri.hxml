@@ -1,8 +1,0 @@
--lib uhu
--lib klas
--lib cmd
--lib unifill
--lib format
--cp src
--neko bin/seri.n
--main Main
