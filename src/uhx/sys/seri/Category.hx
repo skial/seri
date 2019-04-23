@@ -1,3 +1,3 @@
 package uhx.sys.seri;
 
-typedef Category = uhx.sys.seri.v900.Category;
+typedef Category = uhx.sys.seri.v1000.Category;
