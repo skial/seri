@@ -256,7 +256,10 @@ using sys.FileSystem;
     public static function build() {
         var sets:Array<TemplateCtx> = [];
         var output:Array<{path:String, content:String}> = [];
-        var path = '$cwd/template/';
+        var tpl = '$cwd/template/';
+        var abs = '$tpl/Abstract.hx'.normalize();
+        var pack = version.replace('.', '');
+        var out = '$cwd/src/uhx/sys/seri/v$pack';
 
         sets.push( {
             fields:response.blocks.map( function(s) {
@@ -266,11 +269,11 @@ using sys.FileSystem;
                     range: printRange(response.codepoints.blocks.get( s )),
                 }
             } ), 
-            pack: version.replace('.', ''),
+            pack: pack,
             typeName: 'Block',
             rangeType: 'uhx.sys.seri.Range',
             version: version,
-            template:'$path/Abstract.hx'.normalize()
+            template: abs
         } );
         sets.push( {
             fields:response.scripts.map( function(s) {
@@ -280,11 +283,11 @@ using sys.FileSystem;
                     range: printRanges( response.codepoints.scripts.get( s ) ),
                 }
             } ), 
-            pack: version.replace('.', ''),
+            pack: pack,
             typeName: 'Script',
             rangeType: 'uhx.sys.seri.Ranges',
             version: version,
-            template:'$path/Abstract.hx'.normalize()
+            template: abs
         } );
         sets.push( {
             fields:response.categories.map( function(s) {
@@ -294,21 +297,21 @@ using sys.FileSystem;
                     range: printRanges( response.codepoints.categories.get( s ) )
                 }
             } ), 
-            pack: version.replace('.', ''),
+            pack: pack,
             typeName: 'Category',
             rangeType: 'uhx.sys.seri.Ranges',
             version: version,
-            template:'$path/Abstract.hx'.normalize()
+            template: abs
         } );
 
         for (set in sets) {
             var template = new haxe.Template(set.template.getContent());
-            output.push( { path:'$cwd/src/uhx/sys/seri/v${version.replace(".", "")}/${set.typeName}.hx', content:template.execute( set ) } );
+            output.push( { path:'$out/${set.typeName}.hx', content:template.execute( set ) } );
 
         }
-        var template = new haxe.Template('$path/Unicode.hx'.normalize().getContent());
+        var template = new haxe.Template('$tpl/Unicode.hx'.normalize().getContent());
         
-        output.push( { path:'$cwd/src/uhx/sys/seri/v${version.replace(".", "")}/Unicode.hx', content: template.execute( {
+        output.push( { path:'$out/Unicode.hx', content: template.execute( {
             version: version,
             pack: version.replace('.', ''),
         } ) } );
@@ -325,13 +328,8 @@ using sys.FileSystem;
 
     public var Force = 'force';
     public var Debug = 'debug';
-    public var Info = 'seri.info';
-    public var Categories = 'seri.categories';
-    public var Scripts = 'seri.scripts';
-    public var Blocks = 'seri.blocks';
     public var Version = 'seri.version';
     public var Resource = 'seri.resource';
-    public var Format = 'seri.format';
 
     public inline function defined():Bool {
         return Context.defined(this);
