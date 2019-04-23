@@ -1,41 +1,31 @@
 package uhx.sys;
 
-import haxe.Json;
 import uhx.sys.seri.*;
-import haxe.ds.StringMap;
-
-using StringTools;
+import uhx.sys.seri.Unicode;
 
 /**
  * ...
  * @author Skial Bainn
  * Haitian Creole for range
  */
-@:access(uhx.sys.Ioe) class Seri {
+class Seri {
+
+	public static var version(default, null):Version = Unicode.version;
 	
-	/**
-	 * The latest unicode version the data is base on.
-	 */
-	@:isVar public static var version(get, set):Version = '7.0.0';
-	
-	public static function getCategory(category:String):Null<Ranges> {
-		return uhx.sys.seri.v700.Unicode.categoryPoints.get(category);
+	public static inline function getCategory(category:Category):Ranges {
+		return (category:Ranges);
 	}
 	
-	public static function getScript(script:String):Null<Ranges> {
-		return uhx.sys.seri.v700.Unicode.scriptPoints.get(script);
+	public static inline function getScript(script:Script):Ranges {
+		return (script:Ranges);
 	}
 	
-	public static function getBlock(block:String):Null<Range> {
-		return uhx.sys.seri.v700.Unicode.blockPoints.get(block);
+	public static inline function getBlock(block:Block):Range {
+		return (block:Range);
 	}
-	
-	private static function get_version():String {
-		return version;
-	}
-	
-	private static function set_version(v:String):String {
-		return version = v;
-	}
+
+	public static final categories:Array<Category> = Unicode.categories;
+	public static final blocks:Array<Block> = Unicode.blocks;
+	public static final scripts:Array<Script> = Unicode.scripts;
 	
 }

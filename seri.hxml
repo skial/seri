@@ -1,8 +1,20 @@
--lib uhu
--lib klas
--lib cmd
 -lib unifill
--lib format
+
 -cp src
--neko bin/seri.n
+
+-dce full
+-D analyzer-optimize
+
 -main Main
+
+--each
+
+-js bin/seri.js
+
+--next
+
+-neko bin/seri.n
+
+--next
+
+-hl bin/seri.hl

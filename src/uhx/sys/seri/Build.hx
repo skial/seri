@@ -2,11 +2,9 @@ package uhx.sys.seri;
 
 import haxe.Json;
 import haxe.io.Eof;
-import uhx.sys.Ioe;
 import sys.io.Process;
 import haxe.macro.Type;
 import haxe.macro.Expr;
-import uhx.macro.KlasImp;
 import haxe.ds.StringMap;
 import haxe.DynamicAccess;
 import haxe.macro.Printer;
@@ -27,7 +25,7 @@ using haxe.macro.MacroStringTools;
  * ...
  * @author Skial Bainn
  */
-@:access(uhx.sys.Ioe) class Build {
+@:nullSafety class Build {
 	
 	public static var characters:Int = 0;
 	public static var maxCharacters:Int = 75;
@@ -35,10 +33,8 @@ using haxe.macro.MacroStringTools;
 	/**
 	 *  Usage:
 	 *		haxe build.template.hxml
-	 *		haxe -lib cmd -lib unifill -cp src --macro uhx.sys.seri.Build.template()
 	 */
 	public static function template() {
-		var ioe = new Ioe();
 		var response:Response = { };
 		var unicodePath = '${Sys.getCwd()}/template/Unicode.hx'.normalize();
 		var blockPath = '${Sys.getCwd()}/template/Block.hx'.normalize();
@@ -47,11 +43,12 @@ using haxe.macro.MacroStringTools;
 		var outputPath = '${Sys.getCwd()}/src/uhx/sys/Seri/v700/'.normalize();
 		var process = new Process('haxelib', ['run', 'seri', '-r', '${Sys.getCwd()}/res/7.0.0/'.normalize(), '-l', '*']);
 		
-		ioe.process( process.stdout, process.stdin );
-		response = Json.parse( ioe.content );
+		trace( process.stdout.readAll() );
+		//ioe.process( process.stdout, process.stdin );
+		//response = Json.parse( ioe.content );
 		process.close();
 		
-		if ([unicodePath, blockPath, scriptPath, categoryPath].exists( function(p) return p.exists() )) {
+		if (false == true) if ([unicodePath, blockPath, scriptPath, categoryPath].exists( function(p) return p.exists() )) {
 			var unicodeContent = unicodePath.getContent();
 			var blockCompiled = blockPath.getContent();
 			var scriptCompiled = scriptPath.getContent();
@@ -101,9 +98,9 @@ using haxe.macro.MacroStringTools;
 				.concat( ['-c'].concat( response.categories/*.filter( function(c) return c.length > 1 )*/ ) ) 
 			);
 			
-			ioe = new Ioe();
-			ioe.process( cmd.stdout, cmd.stdin );
-			var reply:Response = Json.parse( ioe.content );
+			//ioe = new Ioe();
+			//ioe.process( cmd.stdout, cmd.stdin );
+			var reply:Response = Json.parse( ''/*ioe.content*/ );
 			
 			characters = 0;
 			for (block in response.blocks) {

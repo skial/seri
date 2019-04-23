@@ -6,7 +6,9 @@ using Lambda;
  * ...
  * @author Skial Bainn
  */
-class Ranges {
+@:structInit class Ranges {
+
+	public static var EMPTY = new Ranges([new Range(0, 0)]);
 
 	public var ranges:Array<Range>;
 	public var min(default, null):CodePoint;
@@ -30,7 +32,7 @@ class Ranges {
 	
 }
 
-private class RangesIterator {
+@:structInit private class RangesIterator {
 	
 	public var ranges:Ranges;
 	public var current:CodePoint;
