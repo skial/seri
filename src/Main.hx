@@ -13,6 +13,7 @@ class Main {
         trace( ranges.min, ranges.max );
 
         for (range in ranges) trace( range );
+        trace( Seri.version );
     }
 
 }
