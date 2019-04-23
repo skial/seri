@@ -13,6 +13,13 @@ using sys.FileSystem;
 
     public static var cwd:String = Sys.getCwd();
 
+    public static var response:Response = { 
+        categories: [], scripts: [], blocks: [],
+        codepoints: {
+            scripts: [], categories: [], blocks: [],
+        }, 
+    }
+
     public static var version:UnicodeVersion = Version.defined()
         ? Version.get() : UnicodeVersion.current;
 
@@ -26,6 +33,10 @@ using sys.FileSystem;
     public static var dataContent:Lazy<String> = dataSrc.map( p -> decompress(File.read(p)) );
     public static var scriptContent:Lazy<String> = scriptSrc.map( p -> decompress(File.read(p)) );
     public static var blockContent:Lazy<String> = blockSrc.map( p -> decompress(File.read(p)) );
+
+    public static var unicodeData:Array<UnicodeData> = [];
+    public static var scriptData:Array<ScriptData> = [];
+    public static var blockData:Array<BlockData> = [];
 
     public static var dataParts:Lazy<Array<String>> = dataContent
         .map( shatter );
@@ -71,21 +82,6 @@ using sys.FileSystem;
 
         build();
     }
-
-    public static var response:Response = { 
-        codepoints: {
-            scripts: [],
-            categories: [],
-            blocks: [],
-        }, 
-        categories: [],
-        scripts: [],
-        blocks: [],
-    }
-
-    public static var unicodeData:Array<UnicodeData> = [];
-    public static var scriptData:Array<ScriptData> = [];
-    public static var blockData:Array<BlockData> = [];
 
     public static function processUnicodeData() {
         var parts = new DataIterator(dataParts.get());
@@ -190,7 +186,7 @@ using sys.FileSystem;
 
     public static function shatter(value:String):Array<String> {
         // Completion would be slow if this wasnt defined.
-        var parts = if (Debug.defined() && !Force.defined()) {
+        var parts = if (Debug.defined() && !Save.defined()) {
             [];
         } else {
             // Eval silently stalls or takes too long to do `value.split(';')`.
@@ -316,7 +312,7 @@ using sys.FileSystem;
             pack: version.replace('.', ''),
         } ) } );
         
-        if (Force.defined()) {
+        if (Save.defined()) {
             for (ctx in output) ctx.path.saveContent( ctx.content );
 
         }
@@ -326,7 +322,7 @@ using sys.FileSystem;
 
 @:forward enum abstract Defines(String) from String to String {
 
-    public var Force = 'force';
+    public var Save = 'save';
     public var Debug = 'debug';
     public var Version = 'seri.version';
     public var Resource = 'seri.resource';
