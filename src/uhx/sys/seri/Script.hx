@@ -1,3 +1,3 @@
 package uhx.sys.seri;
 
-typedef Script = uhx.sys.seri.v1100.Script;
+typedef Script = uhx.sys.seri.v1200.Script;

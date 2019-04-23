@@ -6,5 +6,6 @@ package uhx.sys.seri;
 	public var v900 = '9.0.0';
 	public var v1000 = '10.0.0';
 	public var v1100 = '11.0.0';
-	public var current = v1100;
+	public var v1200 = '12.0.0';
+	public var current = v1200;
 }
