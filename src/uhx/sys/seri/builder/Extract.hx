@@ -58,6 +58,13 @@ using sys.FileSystem;
     );
 
     public static function main() {
+        if (DryRun.defined()) {
+            trace( cwd, version );
+            trace( dataSrc.get() );
+            trace( scriptSrc.get() );
+            trace( blockSrc.get() );
+        }
+
         processUnicodeData();
 
         // Add single character categories.
@@ -186,7 +193,7 @@ using sys.FileSystem;
 
     public static function shatter(value:String):Array<String> {
         // Completion would be slow if this wasnt defined.
-        var parts = if (Debug.defined() && !Save.defined()) {
+        var parts = if (!DryRun.defined() && (Debug.defined() && !Save.defined())) {
             [];
         } else {
             // Eval silently stalls or takes too long to do `value.split(';')`.
@@ -312,8 +319,17 @@ using sys.FileSystem;
             pack: version.replace('.', ''),
         } ) } );
         
-        if (Save.defined()) {
-            for (ctx in output) ctx.path.saveContent( ctx.content );
+        if (!DryRun.defined() && Save.defined()) {
+            for (ctx in output) {
+                if (!ctx.path.directory().exists()) {
+                    ctx.path.directory().createDirectory();
+                }
+
+                ctx.path.saveContent( ctx.content );
+            }
+
+        } else {
+            for (ctx in output) trace( ctx.content );
 
         }
     }
@@ -324,6 +340,7 @@ using sys.FileSystem;
 
     public var Save = 'save';
     public var Debug = 'debug';
+    public var DryRun = 'dryrun';
     public var Version = 'seri.version';
     public var Resource = 'seri.resource';
 
