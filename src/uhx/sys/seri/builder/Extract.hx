@@ -90,9 +90,9 @@ using sys.FileSystem;
             unicodeData.push( data );
 
             if (response.categories.indexOf( data.category ) == -1) {
-				response.categories.push( data.category );
-				
-			}
+                response.categories.push( data.category );
+
+            }
 
         }
 
@@ -107,9 +107,9 @@ using sys.FileSystem;
             scriptData.push( data );
 
             if (response.scripts.indexOf( data.script ) == -1) {
-				response.scripts.push( data.script );
-				
-			}
+                response.scripts.push( data.script );
+
+            }
 
         }
 	}
@@ -121,9 +121,9 @@ using sys.FileSystem;
             blockData.push( data );
 
             if (response.blocks.indexOf( data.block ) == -1) {
-				response.blocks.push( data.block );
-				
-			}
+                response.blocks.push( data.block );
+
+            }
 
         }
     }
@@ -149,33 +149,33 @@ using sys.FileSystem;
     }
 
     private static function scriptPoints(script:String):Void {
-		if (!response.codepoints.scripts.exists( script )) {
-			
-			var results = [];
-			
-			for (s in scriptData) {
+        if (!response.codepoints.scripts.exists( script )) {
+
+            var results = [];
+
+            for (s in scriptData) {
                 if (s.script == script) {
-                    
-                    results.push( s.range );
-                    
+
+                results.push( s.range );
+
                 }
             }
-			
-			response.codepoints.scripts.set( script, results );
-			
-		}
+
+            response.codepoints.scripts.set( script, results );
+
+        }
 	}
 
     private static function blockPoints(block:String):Void {
-		if (!response.codepoints.blocks.exists( block )) {
-			
-			for (b in blockData) if (b.block == block) {
-				response.codepoints.blocks.set( block, b.range );
-				break;
-				
-			}
-			
-		}
+        if (!response.codepoints.blocks.exists( block )) {
+
+            for (b in blockData) if (b.block == block) {
+                response.codepoints.blocks.set( block, b.range );
+                break;
+
+            }
+
+        }
 	}
 
     public static function decompress(handle:sys.io.FileInput):String {
