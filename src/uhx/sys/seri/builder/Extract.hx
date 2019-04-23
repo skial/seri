@@ -164,7 +164,7 @@ using sys.FileSystem;
             response.codepoints.scripts.set( script, results );
 
         }
-	}
+    }
 
     private static function blockPoints(block:String):Void {
         if (!response.codepoints.blocks.exists( block )) {
@@ -176,7 +176,7 @@ using sys.FileSystem;
             }
 
         }
-	}
+    }
 
     public static function decompress(handle:sys.io.FileInput):String {
         var expanded = new format.gz.Reader( handle ).read().data.toString();
