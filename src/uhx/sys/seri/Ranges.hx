@@ -1,5 +1,7 @@
 package uhx.sys.seri;
 
+import unifill.CodePoint;
+
 using Lambda;
 
 /**
