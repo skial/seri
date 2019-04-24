@@ -50,19 +50,7 @@ class Ranges {
 	public function iterator():Iterator<CodePoint>;
 }
 ```
-
-### [CodePoint] API
-
-```Haxe
-@:forward abstract CodePoint(unifill.CodePoint) from unifill.CodePoint to unifill.CodePoint {
-	public inline function new(v:unifill.CodePoint);
-	@:from public static inline function fromInt(v:Int):CodePoint;
-	@:to public inline function toInt():Int;
-	@:to public inline function toString():String;
-}
-```
 	
 [Seri]: https://github.com/skial/seri/blob/master/src/uhx/sys/Seri.hx
 [Range]: https://github.com/skial/seri/blob/master/src/uhx/sys/seri/Range.hx
 [Ranges]: https://github.com/skial/seri/blob/master/src/uhx/sys/seri/Ranges.hx
-[CodePoint]: https://github.com/skial/seri/blob/master/src/uhx/sys/seri/CodePoint.hx
