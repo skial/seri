@@ -8,8 +8,8 @@ import uhx.sys.seri.Category;
 class Main {
 
     public static function main() {
-        trace( Seri.getCategory( Category.Zl ) );
-        var ranges:Ranges = Category.Zl;
+        trace( Seri.getCategory( Category.Pf ) );
+        var ranges:Ranges = Category.Pf;
         trace( ranges.min, ranges.max );
 
         for (range in ranges) trace( range );

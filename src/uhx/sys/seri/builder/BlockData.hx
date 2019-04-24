@@ -19,7 +19,7 @@ using StringTools;
 		? this[0].indexOf('..') == -1 
 			? new Range( '0x${this[0].trim()}'.parseInt(), '0x${this[0].trim()}'.parseInt() )
 			: new Range( '0x${this[0].split("..")[0]}'.parseInt(), '0x${this[0].split("..")[1].trim()}'.parseInt() )
-		: new Range(0, 0);
+		: new Range(-1, -1);
 	}
 	
 	private inline function get_block():String {

@@ -1,5 +1,6 @@
 package uhx.sys.seri.builder;
 
+import unifill.CodePoint;
 import haxe.macro.Context;
 import uhx.sys.seri.Version as UnicodeVersion;
 
@@ -93,7 +94,7 @@ using sys.FileSystem;
     public static function processUnicodeData() {
         var parts = new DataIterator(dataParts.get());
 
-        for (data in parts) if (data.codepoint != -1) {
+        for (data in parts) if (data.codepoint != null) {
             unicodeData.push( data );
 
             if (response.categories.indexOf( data.category ) == -1) {
@@ -141,7 +142,7 @@ using sys.FileSystem;
 
         for (c in unicodeData) if (c.category == category || (category.length == 1 && c.category.startsWith(category))) {
             if (range.min == -1) range.min = range.max = c.codepoint;
-            if ((c.codepoint.toInt() - range.max.toInt()) <= 1) {
+            if ((c.codepoint - range.max) <= 1) {
                 range.max = c.codepoint;
                 
             } else {
@@ -325,11 +326,13 @@ using sys.FileSystem;
                     ctx.path.directory().createDirectory();
                 }
 
+                if (ctx.content.indexOf('(-1') > -1) throw 'Default Range::min detected in ${ctx.path}';
+                if (ctx.content.indexOf(', -1') > -1) throw 'Default Range::max detected in ${ctx.path}';
                 ctx.path.saveContent( ctx.content );
             }
 
         } else {
-            for (ctx in output) trace( ctx.content );
+            for (ctx in output) trace( ctx.content, ctx.content.indexOf('-1') > -1 );
 
         }
     }

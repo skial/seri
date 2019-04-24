@@ -4,7 +4,7 @@ using Std;
 
 @:nullSafety(Strict) @:forward abstract UnicodeData(Array<String>) from Array<String> to Array<String> {
 
-	public var codepoint(get, never):CodePoint;
+	public var codepoint(get, never):Null<Int>;
 	public var name(get, never):String;
 	public var category(get, never):String;
 	
@@ -16,10 +16,10 @@ using Std;
 		}
 	}
 	
-	private inline function get_codepoint():CodePoint {
+	private inline function get_codepoint():Null<Int> {
 		return this[0] != null 
-			? CodePoint.fromInt( '0x${this[0]}'.parseInt() )
-			: -1;
+			? '0x${this[0]}'.parseInt()
+			: null;
 	}
 	
 	private inline function get_name():String {

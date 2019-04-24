@@ -10,12 +10,12 @@ import unifill.CodePoint;
 
 	public static var EMPTY = new Range(0, 0);
 
-	public var min:CodePoint;
-	public var max:CodePoint;
+	public var min:Int;
+	public var max:Int;
 	
 	public var length(default, null):Int;
 	
-	public inline function new (min:CodePoint, max:CodePoint) {
+	public inline function new (min:Int, max:Int) {
 		this.min = min;
 		this.max = max;
 		this.length = (max - min) + 1;
