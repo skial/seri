@@ -1,5 +1,6 @@
 package uhx.sys.seri.builder;
 
+import haxe.io.Bytes;
 import uhx.sys.seri.Range;
 
 using Std;
@@ -17,8 +18,11 @@ using StringTools;
 	private inline function get_range():Range {
 		return this[0] != null
 		? this[0].indexOf('..') == -1 
-			? new Range( '0x${this[0].trim()}'.parseInt(), '0x${this[0].trim()}'.parseInt() )
-			: new Range( '0x${this[0].split("..")[0]}'.parseInt(), '0x${this[0].split("..")[1].trim()}'.parseInt() )
+			? new Range( '0x${this[0]}'.parseInt(), '0x${this[0]}'.parseInt() )
+			: {
+				var parts = this[0].split('..');
+				new Range( '0x${parts[0]}'.parseInt(), '0x${parts[1]}'.parseInt() );
+			}
 		: new Range(-1, -1);
 	}
 	
