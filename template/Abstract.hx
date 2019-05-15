@@ -8,6 +8,7 @@ package uhx.sys.seri.v::pack::;
 **/
 
 import uhx.sys.seri.Range;
+import uhx.sys.seri.Single;
 import uhx.sys.seri.Ranges;
 
 @:unicode("::version::")
