@@ -8,6 +8,7 @@ package uhx.sys.seri.v1200;
 **/
 
 import uhx.sys.seri.Range;
+import uhx.sys.seri.Single;
 import uhx.sys.seri.Ranges;
 
 @:unicode("12.0.0")

@@ -4,13 +4,9 @@ import unifill.CodePoint;
 
 using Lambda;
 
-/**
- * ...
- * @author Skial Bainn
- */
 @:structInit class Ranges {
 
-	public static var EMPTY = new Ranges([new Range(0, 0)]);
+	public static var EMPTY = new Ranges([Range.EMPTY]);
 
 	public var ranges:Array<Range>;
 	public var min(default, null):CodePoint;
@@ -19,16 +15,16 @@ using Lambda;
 	
 	public inline function new(ranges:Array<Range>) {
 		this.ranges = ranges;
-		this.min = ranges[0].min;
-		this.max = ranges[ranges.length - 1].max;
-		for (range in ranges) length += (range.max - range.min) + 1;
+		min = ranges[0].min;
+		max = ranges[ranges.length - 1].max;
+		length = max - min;
 	}
 	
 	public inline function has(value:Int):Bool {
-		return ranges.exists( function(r) return r.has( value ) );
+		return ranges.exists( r -> r.has( value ) );
 	}
 	
-	public function iterator():Iterator<CodePoint> {
+	public inline function iterator():Iterator<CodePoint> {
 		return new RangesIterator( this );
 	}
 	

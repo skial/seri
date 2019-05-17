@@ -2,10 +2,6 @@ package uhx.sys.seri;
 
 import unifill.CodePoint;
 
-/**
- * ...
- * @author Skial Bainn
- */
 @:structInit class Range {
 
 	public static var EMPTY = new Range(0, 0);
@@ -18,14 +14,14 @@ import unifill.CodePoint;
 	public inline function new (min:Int, max:Int) {
 		this.min = min;
 		this.max = max;
-		this.length = (max - min) + 1;
+		this.length = max - min;
 	}
 	
 	public inline function has(value:Int):Bool {
 		return value >= min && value <= max;
 	}
 	
-	public function iterator():Iterator<CodePoint> {
+	public inline function iterator():Iterator<CodePoint> {
 		return new RangeIterator( this );
 	}
 	

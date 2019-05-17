@@ -250,7 +250,7 @@ using sys.FileSystem;
     }
 
     public static function printRange(r:Range):String {
-        return 'new Range(${r.min}, ${r.max})';
+        return r.length == 0 ? 'new Single(${r.min})' : 'new Range(${r.min}, ${r.max})';
     }
 
     public static function printRanges(v:Array<Range>):String {
