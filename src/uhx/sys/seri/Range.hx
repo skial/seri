@@ -21,7 +21,7 @@ import unifill.CodePoint;
 		return value >= min && value <= max;
 	}
 	
-	public function iterator():Iterator<CodePoint> {
+	public inline function iterator():Iterator<CodePoint> {
 		return new RangeIterator( this );
 	}
 	
