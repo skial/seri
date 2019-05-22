@@ -9,13 +9,14 @@ import unifill.CodePoint;
 	public var min:Int;
 	public var max:Int;
 	
-	public var length(default, null):Int;
+	public var length(get, null):Int;
 	
 	public inline function new (min:Int, max:Int) {
 		this.min = min;
 		this.max = max;
-		this.length = max - min;
 	}
+
+	private inline function get_length() return max - min;
 	
 	public inline function has(value:Int):Bool {
 		return value >= min && value <= max;
