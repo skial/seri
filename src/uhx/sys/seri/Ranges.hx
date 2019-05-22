@@ -11,14 +11,15 @@ using Lambda;
 	public var ranges:Array<Range>;
 	public var min(default, null):CodePoint;
 	public var max(default, null):CodePoint;
-	public var length(default, null):Int = 0;
+	public var length(get, null):Int;
 	
 	public inline function new(ranges:Array<Range>) {
 		this.ranges = ranges;
 		min = ranges[0].min;
 		max = ranges[ranges.length - 1].max;
-		length = max - min;
 	}
+
+	private inline function get_length() return max - min;
 	
 	public inline function has(value:Int):Bool {
 		return ranges.exists( r -> r.has( value ) );

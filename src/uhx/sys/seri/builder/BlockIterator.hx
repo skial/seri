@@ -12,6 +12,10 @@ class BlockIterator {
         self = parts;
     }
 
+    public function reset():Void {
+        index = 0;
+    }
+
     public function hasNext():Bool {
         return index < (length -1);
     }
