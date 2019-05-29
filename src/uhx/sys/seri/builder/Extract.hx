@@ -7,6 +7,7 @@ import uhx.sys.seri.builder.ucd.Blocks;
 import uhx.sys.seri.builder.ucd.Scripts;
 import uhx.sys.seri.builder.ucd.PropList;
 import uhx.sys.seri.builder.ucd.Context as Ctx;
+import uhx.sys.seri.builder.ucd.DerivedCoreProperties;
 import uhx.sys.seri.builder.ucd.UnicodeData as UcdData;
 import uhx.sys.seri.Version as UnicodeVersion;
 
@@ -30,7 +31,8 @@ typedef TUCD = {
 
     public static var datasets:Array<String->Version->TUCD> = [
         UcdData.new.bind(_, _), Blocks.new.bind(_, _), 
-        Scripts.new.bind(_, _), PropList.new.bind(_, _)
+        Scripts.new.bind(_, _), PropList.new.bind(_, _),
+        DerivedCoreProperties.new.bind(_, _),
     ];
 
     public static function main() {
