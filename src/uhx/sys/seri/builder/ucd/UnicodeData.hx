@@ -52,14 +52,16 @@ class UnicodeData extends Ucd<UCData> {
             iter.reset();
 
             for (data in iter) {
+                var _range = data.range;
                 if (category == data.category || category.length == 1 && data.category.startsWith(category)) {
-                    if (range.min == -1) range.min = range.max = data.codepoint;
-                    if ((data.codepoint - range.max) <= 1) {
-                        range.max = data.codepoint;
+                    if (range.min == -1) range.min = range.max = _range.min;
+                    if ((_range.max - range.max) <= 1) {
+                        range.max = _range.max;
 
                     } else {
                         ranges.push( range );
-                        range = new Range( data.codepoint, data.codepoint );
+                        //range = new Range( data.codepoint, data.codepoint );
+                        range = _range;
                     }
 
                 }

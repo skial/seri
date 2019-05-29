@@ -1,5 +1,7 @@
 package uhx.sys.seri.builder;
 
+using StringTools;
+
 class DataIterator {
 
     private var step:Int = 1;
@@ -22,6 +24,13 @@ class DataIterator {
 
     public function next():UnicodeData {
         var data = new UnicodeData( self[index].split(';') );
+        // @see https://unicode.org/reports/tr44/#Code_Point_Ranges
+        if (data.name.startsWith('<') && data.name.endsWith('First>')) {
+            var _next = new UnicodeData( self[index+1].split(';') );
+            data.name = _next.name.substring(1, _next.name.lastIndexOf(', Last>'));
+            data.range = new Range(data.range.min, _next.range.min);
+            index += step;
+        }
         index += step;
         return data;
     }

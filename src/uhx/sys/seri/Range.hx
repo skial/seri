@@ -10,7 +10,7 @@ import unifill.CodePoint;
 	private inline function get_length() return this.max - this.min;
 
 	public inline function new(min:Int, max:Int) {
-		this = new RangeImpl(min, max);
+		this = new RangeImpl( min, max );
 	}
 
 	public inline function has(value:Int):Bool {
@@ -22,7 +22,12 @@ import unifill.CodePoint;
 	}
 
 	@:from public static inline function fromInt(v:Int):Range {
-		return new RangeImpl(v, v);
+		return new RangeImpl( v, v );
+	}
+
+	/* Creates a `Range` using the first and last indexes of the array. */
+	@:from public static inline function fromArray(v:Array<Int>):Range {
+		return new RangeImpl( v[0], v[v.length-1] );
 	}
 	
 }
