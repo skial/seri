@@ -1,7 +1,7 @@
 package uhx.sys.seri.v::pack::;
 
 /**
-    This file has be auto-generated. Do NOT edit.
+    This file has been auto-generated. Do NOT edit.
 **/
 
 import uhx.sys.seri.*;

@@ -7,6 +7,7 @@ import uhx.sys.seri.builder.ucd.Blocks;
 import uhx.sys.seri.builder.ucd.Scripts;
 import uhx.sys.seri.builder.ucd.PropList;
 import uhx.sys.seri.builder.ucd.Context as Ctx;
+import uhx.sys.seri.builder.ucd.DerivedCoreProperties;
 import uhx.sys.seri.builder.ucd.UnicodeData as UcdData;
 import uhx.sys.seri.Version as UnicodeVersion;
 
@@ -30,7 +31,8 @@ typedef TUCD = {
 
     public static var datasets:Array<String->Version->TUCD> = [
         UcdData.new.bind(_, _), Blocks.new.bind(_, _), 
-        Scripts.new.bind(_, _), PropList.new.bind(_, _)
+        Scripts.new.bind(_, _), PropList.new.bind(_, _),
+        DerivedCoreProperties.new.bind(_, _),
     ];
 
     public static function main() {
@@ -103,7 +105,7 @@ typedef TUCD = {
     }
 
     public static function printRange(r:Range):String {
-        return r.length <= 0 ? 'new Single(${r.min})' : 'new Range(${r.min}, ${r.max})';
+        return r.length <= 0 ? '${r.min}' : 'new Range(${r.min}, ${r.max})';
     }
 
     public static function printRanges(v:Array<Range>):String {
