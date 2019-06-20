@@ -18,3 +18,23 @@
 --next
 
 -hl bin/seri.hl
+
+--next
+
+-java bin/java
+
+--next
+
+-cs bin/cs
+
+--next
+
+-python bin/seri.py
+
+--next
+
+-php bin/php
+
+--next
+
+--interp

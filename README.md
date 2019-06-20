@@ -6,6 +6,10 @@ Seri provides convinence methods to Unicode data. Get the range of codepoints fo
 specific Block, Script or Category. Get an array of available Blocks,
 Scripts or Category identifiers.
 
+| Php | Python | Java | C# | Js/Node | Interp | Neko | HashLink | Lua | CPP |
+| - | -| - | - | - | -| - | - | - | - |
+| ✅ | ✅     | ✅  | ✅ | ✅     | ✅ | ✅  | ✅       | ➖ | ➖ |
+
 ## Installation
 
 `lix install gh:skial/seri`
