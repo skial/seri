@@ -1,14 +1,17 @@
 -lib unifill
+-lib tink_unittest
 
 -cp src
+-cp tests
 
 -dce full
 -D analyzer-optimize
 
--main Main
+-main Entry
 
 --each
 
+-lib hxnodejs
 -js bin/seri.js
 
 --next

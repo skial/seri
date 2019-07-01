@@ -29,6 +29,55 @@ import unifill.CodePoint;
 	@:from public static inline function fromArray(v:Array<Int>):Range {
 		return new RangeImpl( v[0], v[v.length-1] );
 	}
+
+	// @see https://en.wikipedia.org/wiki/Intersection_(set_theory)
+	public static function intersection(a:Range, b:Range):Range {
+		var r = new Range(0, 0); // Default is empty/disjoint.
+		if ((a.has(b.min) || a.has(b.max)) || (b.has(a.min) || b.has(a.max))) {
+			r.min = a.min > b.min ? a.min : b.min;
+			r.max = a.max < b.max ? a.max : b.max;
+
+		}
+
+		return r;
+	}
+
+	// @see https://en.wikipedia.org/wiki/Union_(set_theory)
+	public static function union(a:Range, b:Range):Ranges {
+		var r = [];
+
+		if (a.min <= (b.min - 1) && a.max >= (b.max - 1)) {
+			r.push(a);
+
+		} else if ((b.min - 1) <= a.min && (b.max - 1) >= a.max) {
+			r.push(b);
+
+		} else if (a.min <= (b.min - 1) && a.max >= (b.min - 1) && (b.max - 1) >= a.max) {
+			r.push(new Range(a.min, b.max));
+
+		} else if ((b.min - 1) <= a.min && (b.max - 1) >= a.min && a.max >= (b.max - 1)) {
+			r.push(new Range(b.min, a.max));
+
+		} else if (a.min > b.min) {
+			r.push(b);
+			r.push(a);
+
+		} else {
+			r.push(a);
+			r.push(b);
+		}
+
+		return new Ranges(r);
+	}
+
+	// @see https://en.wikipedia.org/wiki/Complement_(set_theory)
+	public static function complement(a:Range, ?max:Int = 0x10FFFF):Ranges {
+		var r = [];
+		if (a.min-1 > 0) r.push(new Range(0, a.min-1));
+		r.push(new Range(a.max+1, max));
+
+		return new Ranges(r);
+	}
 	
 }
 
