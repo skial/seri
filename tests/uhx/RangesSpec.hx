@@ -82,4 +82,22 @@ class RangesSpec {
         return asserts.done();
     }
 
+    public function testAdd() {
+        var r = new Ranges([new Range(10, 20)]);
+        asserts.assert( r.values.length == 1 );
+        asserts.assert( r.add(19) == false );
+        asserts.assert( r.values.length == 1 );
+        asserts.assert( r.add(new Range(30, 40)) == true );
+        asserts.assert( r.values.length == 2 );
+        // 5-9 are not in range, but overlap with an existing `Range`
+        // Insert a new `Range` with the original min and reduced max.
+        asserts.assert( r.add(new Range(5, 15)) == true );
+        asserts.assert( r.values.length == 3 );
+        asserts.assert( r.add(new Range(15, 25)) == true );
+        asserts.assert( r.values.length == 4 );
+
+        trace( r );
+        return asserts.done();
+    }
+
 }

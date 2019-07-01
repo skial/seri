@@ -9,21 +9,48 @@ using Lambda;
 	public static var EMPTY = new Ranges([Range.EMPTY]);
 
 	public var values:Array<Range>;
-	public var min(default, null):CodePoint;
-	public var max(default, null):CodePoint;
+	public var min(get, null):CodePoint;
+	public var max(get, null):CodePoint;
 	public var length(get, null):Int;
 	
 	public inline function new(ranges:Array<Range>) {
 		values = ranges;
 		if (values.length == 0) values = EMPTY.values;
-		min = values[0].min;
-		max = values[values.length - 1].max;
 	}
 
+	private inline function get_min() return min = values[0].min;
+	private inline function get_max() return max = values[values.length - 1].max;
 	private inline function get_length() return max - min;
 	
 	public inline function has(value:Int):Bool {
 		return values.exists( r -> r.has( value ) );
+	}
+
+	// Returns true if **_nothing_** was inserted.
+	public inline function add(range:Range):Bool {
+		var idx = values.length;
+		var inRange = false;
+		for (i in 0...values.length) {
+			if (range.min >= values[i].min && range.max <= values[i].max) {
+				idx = i;
+				inRange = true;
+				break;
+			} else if (range.min < values[i].min && range.max <= values[i].max) {
+				idx = i;
+				range = new Range(range.min, values[i].min -1);
+				break;
+			} else if (range.min <= values[i].max && range.max > values[i].max) {
+				idx = i+1;
+				range = new Range(values[i].max + 1, range.max);
+				break;
+			}
+		}
+
+		if (!inRange) {
+			values.insert(idx, range);
+		}
+
+		return !inRange;
 	}
 	
 	public inline function iterator():Iterator<CodePoint> {
