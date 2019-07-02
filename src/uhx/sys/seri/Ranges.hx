@@ -9,21 +9,22 @@ using Lambda;
 	public static var EMPTY = new Ranges([Range.EMPTY]);
 
 	public var values:Array<Range>;
-	public var min(get, null):CodePoint;
-	public var max(get, null):CodePoint;
+	public var min(get, null):Int;
+	public var max(get, null):Int;
 	public var length(get, null):Int;
 	
 	public inline function new(ranges:Array<Range>) {
 		values = ranges;
-		if (values.length == 0) values = EMPTY.values;
+		//if (values.length == 0) values = EMPTY.values;
 	}
 
-	private inline function get_min() return min = values[0].min;
-	private inline function get_max() return max = values[values.length - 1].max;
+	private inline function get_min() return values[0].min | 0;
+	private inline function get_max() return values[values.length - 1].max | 0;
 	private inline function get_length() return max - min;
 	
-	public inline function has(value:Int):Bool {
-		return values.exists( r -> r.has( value ) );
+	public function has(value:Int):Bool {
+		for (range in values) if (range.has(value)) return true;
+		return false;
 	}
 
 	// Returns true if **_nothing_** was inserted.
@@ -54,13 +55,17 @@ using Lambda;
 	}
 
 	public function remove(range:Range):Bool {
-		if (has(range.min) || has(range.max)) {
+		if (range.min == min && range.max == max) {
+			values.splice(0, values.length);
+			return true;
+
+		} else if (has(range.min) || has(range.max)) {
 			var c = Ranges.complement(new Ranges([range]), min, max);
 
 			if (c.values.length > values.length || !c.has(range.min) && !c.has(range.max)) {
 				values = c.values;
 				return true;
-				
+
 			}
 
 		}
@@ -68,26 +73,31 @@ using Lambda;
 		return false;
 	}
 	
-	public inline function iterator():Iterator<CodePoint> {
+	public inline function iterator():Iterator<Int> {
 		return new RangesIterator( this );
 	}
 
 	public static function intersection(a:Ranges, b:Ranges):Range {
 		var r = new Range(0, 0); // Default is empty/disjoint.
 		var c = a.values.concat( b.values );
-
 		switch c.length {
 			case 1: return c[0];
 			case 2: return Range.intersection(c[0], c[1]);
 			case _:
 				var len = 0;
-				r = c[0];
+				var t = c[0];
+				var match = false;
 				while (len < (c.length-1)) {
-					r = Range.intersection(r, c[len+1]);
+					if ((t.has(c[len+1].min) || t.has(c[len+1].max)) || (c[len+1].has(t.min) || c[len+1].has(t.max))) {
+						t.min = t.min > c[len+1].min ? t.min : c[len+1].min;
+						t.max = t.max < c[len+1].max ? t.max : c[len+1].max;
+						match = true;
+
+					}
 					len++;
 				}
+				if (match) r = t;
 		}
-
 		return r;
 	}
 
@@ -155,7 +165,7 @@ using Lambda;
 @:structInit private class RangesIterator {
 	
 	public var ranges:Ranges;
-	public var current:CodePoint;
+	public var current:Int;
 	public var rangeIndex:Int = 0;
 	
 	public inline function new(ranges:Ranges) {
@@ -163,9 +173,9 @@ using Lambda;
 		this.current = ranges.values[0].min;
 	}
 	
-	public function next():CodePoint {
+	public function next():Int {
 		var result = current;
-		current = current.toInt() + 1;
+		current = current + 1;
 		return result;
 	}
 	

@@ -1,7 +1,5 @@
 package uhx.sys.seri;
 
-import unifill.CodePoint;
-
 @:forward @:forwardStatics abstract Range(RangeImpl) from RangeImpl to RangeImpl {
 
 	public static var EMPTY = new Range(0, 0);
@@ -17,7 +15,7 @@ import unifill.CodePoint;
 		return value >= this.min && value <= this.max;
 	}
 
-	public inline function iterator():Iterator<CodePoint> {
+	public inline function iterator():Iterator<Int> {
 		return new RangeIterator( this );
 	}
 
@@ -96,15 +94,15 @@ import unifill.CodePoint;
 @:structInit private class RangeIterator {
 	
 	public var range:Range;
-	public var current:CodePoint;
+	public var current:Int;
 	
 	public inline function new(range:Range) {
 		this.range = range;
 		this.current = range.min;
 	}
 	
-	public function next():CodePoint {
-		return current = current.toInt() + 1;
+	public function next():Int {
+		return current = current + 1;
 	}
 	
 	public function hasNext():Bool {

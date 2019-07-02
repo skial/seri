@@ -19,6 +19,18 @@ class RangesSpec {
         return asserts.done();
     }
 
+    public function testIntersection_simple() {
+        var r1 = new Ranges([3, 8]);
+        var r2 = new Ranges([1, 3, 7]);
+        var i = Ranges.intersection(r1, r2);
+        trace( i );
+        asserts.assert( !i.has(1) );
+        asserts.assert( i.has(3) );
+        asserts.assert( !i.has(7) );
+        asserts.assert( !i.has(8) );
+        return asserts.done();
+    }
+
     public function testIntersection() {
         var a = new Range(10, 26);
         var b = new Range(15, 28);
@@ -83,7 +95,10 @@ class RangesSpec {
     }
 
     public function testAdd() {
-        var r = new Ranges([new Range(10, 20)]);
+        var r = new Ranges([]);
+        asserts.assert( r.has(0) == false );
+        asserts.assert( r.add(new Range(10, 20)) == true );
+        asserts.assert( r.has(10) && r.has(20) );
         asserts.assert( r.values.length == 1 );
         asserts.assert( r.add(19) == false );
         asserts.assert( r.values.length == 1 );
@@ -117,7 +132,8 @@ class RangesSpec {
         asserts.assert( r.remove( h ) == true );
         asserts.assert( !r.has( h.min ) && !r.has( h.max ) );
 
-        //trace( r );
+        asserts.assert( r.remove(new Range(10, 20)) == true );
+        asserts.assert( r.values.length == 0 );
 
         return asserts.done();
     }
