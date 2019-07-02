@@ -62,7 +62,7 @@ class RangesSpec {
             new Range(80, 85),
             94,
         ]);
-        var c = Ranges.complement(r, 100);
+        var c = Ranges.complement(r, 0, 100);
         //trace( c );
         asserts.assert( c.min == 0 );
         asserts.assert( c.max == 100 );
@@ -90,13 +90,35 @@ class RangesSpec {
         asserts.assert( r.add(new Range(30, 40)) == true );
         asserts.assert( r.values.length == 2 );
         // 5-9 are not in range, but overlap with an existing `Range`
-        // Insert a new `Range` with the original min and reduced max.
+        // Insert a new `Range`.
         asserts.assert( r.add(new Range(5, 15)) == true );
         asserts.assert( r.values.length == 3 );
         asserts.assert( r.add(new Range(15, 25)) == true );
         asserts.assert( r.values.length == 4 );
 
-        trace( r );
+        //trace( r );
+        return asserts.done();
+    }
+
+    public function testRemove() {
+        var r = new Ranges([new Range(10, 20)]);
+
+        asserts.assert( r.values.length == 1 );
+        asserts.assert( r.remove( 5 ) == false );
+        asserts.assert( r.min == 10 );
+        asserts.assert( r.max == 20 );
+        asserts.assert( r.has(15) == true );
+        asserts.assert( r.remove(15) == true );
+        asserts.assert( r.values.length == 2 );
+        asserts.assert( r.has(15) == false );
+
+        var h = new Range(13, 17);
+        asserts.assert( r.has( h.min ) && r.has( h.max ) );
+        asserts.assert( r.remove( h ) == true );
+        asserts.assert( !r.has( h.min ) && !r.has( h.max ) );
+
+        //trace( r );
+
         return asserts.done();
     }
 

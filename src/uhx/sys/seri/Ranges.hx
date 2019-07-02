@@ -52,6 +52,21 @@ using Lambda;
 
 		return !inRange;
 	}
+
+	public function remove(range:Range):Bool {
+		if (has(range.min) || has(range.max)) {
+			var c = Ranges.complement(new Ranges([range]), min, max);
+
+			if (c.values.length > values.length || !c.has(range.min) && !c.has(range.max)) {
+				values = c.values;
+				return true;
+				
+			}
+
+		}
+
+		return false;
+	}
 	
 	public inline function iterator():Iterator<CodePoint> {
 		return new RangesIterator( this );
@@ -112,15 +127,16 @@ using Lambda;
 	}
 
 	// @see https://en.wikipedia.org/wiki/Complement_(set_theory)
-	public static function complement(a:Ranges, ?max:Int = 0x10FFFF):Ranges {
+	public static function complement(a:Ranges, ?min:Int = 0, ?max:Int = 0x10FFFF):Ranges {
 		var r = [];
 		var idx = 0;
 
-		if (a.min-1 > 0) r.push(new Range(0, a.min-1));
+		if (a.min-1 > min) r.push(new Range(min, a.min-1));
 
 		while (idx <= a.values.length-1) {
 			var b = a.values[idx];
 			var a = r[r.length-1];
+			if (a == null) a = new Range(min, min);
 
 			var bmin = b.min-1;
 
