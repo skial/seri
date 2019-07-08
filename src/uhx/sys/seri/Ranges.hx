@@ -27,7 +27,32 @@ using Lambda;
 		return false;
 	}
 
-	// Returns true if **_nothing_** was inserted.
+	/**
+		Adds `range` **without** merging overlapping values. Attempts to find
+		sorted position before inserting.
+	**/
+	public inline function insert(range:Range):Void {
+		var idx = values.length-1;
+
+		for (i in 0...values.length) {
+			if (range.min >= values[i].min && range.max <= values[i].max) {
+				idx = i;
+				break;
+			} else if (range.min < values[i].min) {
+				idx = i;
+				break;
+			} else if (range.min > values[i].min) {
+				idx = i+1;
+			}
+		}
+		
+		values.insert(idx < 0 ? 0 : idx, range);
+	}
+
+	/**
+		Merges `range` with existing `values` if ranges overlap.
+		Returns false if **_nothing_** was inserted.
+	**/
 	public inline function add(range:Range):Bool {
 		var idx = values.length;
 		var inRange = false;
@@ -71,6 +96,20 @@ using Lambda;
 		}
 
 		return false;
+	}
+
+	public function clamp(min:Int, max:Int):Ranges {
+		if (this.min == min && this.max == max) return this;
+		var rs = new Ranges([]);
+
+		for (r in values) {
+			var _r = r.copy();
+			if (r.min < min) _r.min = min;
+			if (r.max > max) _r.max = max;
+			rs.values.push( _r );
+		}
+
+		return rs;
 	}
 	
 	public inline function iterator():Iterator<Int> {

@@ -19,6 +19,10 @@ package uhx.sys.seri;
 		return new RangeIterator( this );
 	}
 
+	public inline function copy():Range {
+		return new Range(this.min, this.max);
+	}
+
 	@:from public static inline function fromInt(v:Int):Range {
 		return new RangeImpl( v, v );
 	}

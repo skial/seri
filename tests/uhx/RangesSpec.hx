@@ -99,6 +99,7 @@ class RangesSpec {
         asserts.assert( r.has(0) == false );
         asserts.assert( r.add(new Range(10, 20)) == true );
         asserts.assert( r.has(10) && r.has(20) );
+        asserts.assert( r.add(15) == false );
         asserts.assert( r.values.length == 1 );
         asserts.assert( r.add(19) == false );
         asserts.assert( r.values.length == 1 );
@@ -112,6 +113,31 @@ class RangesSpec {
         asserts.assert( r.values.length == 4 );
 
         //trace( r );
+        return asserts.done();
+    }
+
+    public function testInsert() {
+        var r = new Ranges([3, 5]);
+
+        asserts.assert( !r.has(2) );
+        asserts.assert( r.has(3) );
+        asserts.assert( !r.has(4) );
+        asserts.assert( r.has(5) );
+        asserts.assert( !r.has(6) );
+        asserts.assert( r.values.length == 2 );
+
+        r.insert(2);
+
+        asserts.assert( r.has(2) );
+        asserts.assert( r.values.length == 3 );
+
+        r.insert(4);
+        r.insert(1);
+        r.insert(6);
+
+        asserts.assert( ('' + [1, 2, 3, 4, 5, 6]) == ('' + r.values.map( r -> r.min )) );
+        trace( r );
+
         return asserts.done();
     }
 
@@ -135,6 +161,19 @@ class RangesSpec {
         asserts.assert( r.remove(new Range(10, 20)) == true );
         asserts.assert( r.values.length == 0 );
 
+        return asserts.done();
+    }
+
+    public function testClamp() {
+        var r = new Ranges([new Range(10, 90)]);
+        var c1 = r.clamp(20, 80);
+        asserts.assert( c1.min == 20 );
+        asserts.assert( c1.max == 80 );
+
+        var c2 = r.clamp( 5, 91 );
+        asserts.assert( c2.min == 10 );
+        asserts.assert( c2.max == 90 );
+        
         return asserts.done();
     }
 
