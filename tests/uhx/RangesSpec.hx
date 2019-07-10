@@ -116,6 +116,15 @@ class RangesSpec {
         return asserts.done();
     }
 
+    public function testAdd_individual() {
+        var r = new Ranges([]);
+        for (i in 'A'.code...'I'.code) r.add(i);
+        asserts.assert( r.min == 'A'.code );
+        asserts.assert( r.max == 'H'.code );
+        asserts.assert( r.values.length == 1 );
+        return asserts.done();
+    }
+
     public function testInsert() {
         var r = new Ranges([3, 5]);
 

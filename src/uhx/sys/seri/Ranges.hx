@@ -50,12 +50,13 @@ using Lambda;
 	}
 
 	/**
-		Merges `range` with existing `values` if ranges overlap.
+		Merges `range` with existing `values` if possible.
 		Returns false if **_nothing_** was inserted.
 	**/
 	public inline function add(range:Range):Bool {
 		var idx = values.length;
 		var inRange = false;
+		
 		for (i in 0...values.length) {
 			if (range.min >= values[i].min && range.max <= values[i].max) {
 				idx = i;
@@ -69,13 +70,19 @@ using Lambda;
 				idx = i+1;
 				range = new Range(values[i].max + 1, range.max);
 				break;
+			} else if (range.min-1 == values[i].max) {
+				var copy = values[i].copy();
+				copy.max = range.max;
+				values[i] = copy;
+				inRange = true;
+				break;
 			}
 		}
 
 		if (!inRange) {
 			values.insert(idx, range);
 		}
-
+		
 		return !inRange;
 	}
 
@@ -99,7 +106,7 @@ using Lambda;
 	}
 
 	public function clamp(min:Int, max:Int):Ranges {
-		if (this.min == min && this.max == max) return this;
+		if (this.min >= min && this.max <= max) return this;
 		var rs = new Ranges([]);
 
 		for (r in values) {
