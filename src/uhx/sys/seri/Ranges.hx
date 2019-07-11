@@ -56,19 +56,12 @@ using Lambda;
 	public inline function add(range:Range):Bool {
 		var idx = values.length;
 		var inRange = false;
-		
 		for (i in 0...values.length) {
-			if (range.min >= values[i].min && range.max <= values[i].max) {
-				idx = i;
+			if (i+1 <= (values.length-1) && range.min-1 == values[i].max && range.max == values[i+1].min-1) {
+				var r = new Range(values[i].min, values[i+1].max);
+				values[i] = r;
+				values.splice(i+1, 1);
 				inRange = true;
-				break;
-			} else if (range.min < values[i].min && range.max <= values[i].max) {
-				idx = i;
-				range = new Range(range.min, values[i].min -1);
-				break;
-			} else if (range.min <= values[i].max && range.max > values[i].max) {
-				idx = i+1;
-				range = new Range(values[i].max + 1, range.max);
 				break;
 			} else if (range.min-1 == values[i].max) {
 				var copy = values[i].copy();
@@ -76,13 +69,30 @@ using Lambda;
 				values[i] = copy;
 				inRange = true;
 				break;
+			} else if (range.max == values[i].min-1) {
+				var copy = values[i].copy();
+				copy.min = range.min;
+				values[i] = copy;
+				inRange = true;
+				break;
+			} else if (range.min > values[i].min && range.max < values[i].max) {
+				idx = i;
+				inRange = true;
+				break;
+			} else if (range.min < values[i].min && range.max < values[i].max) {
+				idx = i;
+				//range = new Range(range.min, values[i].min -1);
+				break;
+			} else if (range.min < values[i].max && range.max > values[i].max) {
+				idx = i+1;
+				//range = new Range(values[i].max + 1, range.max);
+				break;
 			}
 		}
 
 		if (!inRange) {
 			values.insert(idx, range);
 		}
-		
 		return !inRange;
 	}
 

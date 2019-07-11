@@ -125,6 +125,33 @@ class RangesSpec {
         return asserts.done();
     }
 
+    public function testAdd_individualOutOfOrder() {
+        var r = new Ranges([]);
+        r.add('B'.code);
+        asserts.assert( r.min == 'B'.code );
+        asserts.assert( r.max == 'B'.code );
+        asserts.assert( r.values.length == 1 );
+        r.add('A'.code);
+        asserts.assert( r.min == 'A'.code );
+        asserts.assert( r.max == 'B'.code );
+        asserts.assert( r.values.length == 1 );
+        r.add('H'.code);
+        asserts.assert( r.values.length == 2 );
+        r.add('D'.code);
+        asserts.assert( r.values[1].min == 'D'.code );
+        asserts.assert( r.values[1].max == 'D'.code );
+        asserts.assert( r.values.length == 3 );
+        r.add('C'.code);
+        r.add('G'.code);
+        r.add('F'.code);
+        r.add('E'.code);
+        asserts.assert( r.min == 'A'.code );
+        asserts.assert( r.max == 'H'.code );
+        asserts.assert( r.values.length == 1 );
+        trace( r.values );
+        return asserts.done();
+    }
+
     public function testInsert() {
         var r = new Ranges([3, 5]);
 
