@@ -2,7 +2,6 @@ package uhx;
 
 import uhx.sys.seri.Ranges;
 import uhx.sys.seri.Category;
-import uhx.sys.seri.v1200.Category;
 
 @:asserts class CategorySpec {
 
