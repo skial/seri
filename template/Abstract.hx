@@ -7,7 +7,7 @@ package uhx.sys.seri.v::pack::;
 import uhx.sys.seri.*;
 
 @:unicode("::version::")
-enum abstract ::typeName::(String) {
+enum abstract ::typeName::(String) to String {
     ::foreach fields::
     ::if define:: #if ::define:: ::end::public var ::ident:: = "::value::";::if define:: #end ::end::::end::
 
@@ -19,7 +19,7 @@ enum abstract ::typeName::(String) {
         return switch this {
             #if !display
             ::foreach fields::
-            ::if define::#if ::define::::end::case ::ident:::
+            ::if define::#if ::define::::end::case "::ident::":
                 ::range::;
             ::if define::#end::end::::end::
             #end

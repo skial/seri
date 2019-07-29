@@ -9,6 +9,7 @@ class Entry {
         Runner.run(TestBatch.make([
             new uhx.RangeSpec(),
             new uhx.RangesSpec(),
+            new uhx.CategorySpec(),
         ])).handle( Runner.exit );
     }
 
