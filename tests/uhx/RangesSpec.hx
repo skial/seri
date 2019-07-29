@@ -8,6 +8,26 @@ class RangesSpec {
 
     public function new() {}
 
+    public function testInclusive() {
+        var rs = new Ranges([]);
+
+        rs.add( new Range(5, 10) );
+
+        asserts.assert( !rs.has(4) );
+        asserts.assert( rs.has(5) );
+        asserts.assert( rs.has(6) );
+        asserts.assert( rs.has(7) );
+        asserts.assert( rs.has(8) );
+        asserts.assert( rs.has(9) );
+        asserts.assert( rs.has(10) );
+        asserts.assert( !rs.has(11) );
+
+        asserts.assert( rs.min == 5 );
+        asserts.assert( rs.max == 10 );
+        
+        return asserts.done();
+    }
+
     public function testHas() {
         var rs = new Ranges([new Range(10, 20), 25, 35, new Range(40, 42)]);
         asserts.assert( rs.has(18) );

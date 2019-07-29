@@ -73,9 +73,9 @@ package uhx.sys.seri;
 	}
 
 	// @see https://en.wikipedia.org/wiki/Complement_(set_theory)
-	public static function complement(a:Range, ?max:Int = 0x10FFFF):Ranges {
+	public static function complement(a:Range, ?min:Int = 0, ?max:Int = 0x10FFFF):Ranges {
 		var r = [];
-		if (a.min-1 > 0) r.push(new Range(0, a.min-1));
+		if (a.min-1 > min) r.push(new Range(min, a.min-1));
 		r.push(new Range(a.max+1, max));
 
 		return new Ranges(r);

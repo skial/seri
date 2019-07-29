@@ -27,11 +27,15 @@ using Lambda;
 		return false;
 	}
 
+	public inline function copy():Ranges {
+		return new Ranges([for (r in this.values) r.copy()]);
+	}
+
 	/**
 		Adds `range` **without** merging overlapping values. Attempts to find
 		sorted position before inserting.
 	**/
-	public inline function insert(range:Range):Void {
+	public function insert(range:Range):Void {
 		var idx = values.length-1;
 
 		for (i in 0...values.length) {
@@ -53,7 +57,7 @@ using Lambda;
 		Merges `range` with existing `values` if possible.
 		Returns false if **_nothing_** was inserted.
 	**/
-	public inline function add(range:Range):Bool {
+	public function add(range:Range):Bool {
 		var idx = values.length;
 		var inRange = false;
 		for (i in 0...values.length) {

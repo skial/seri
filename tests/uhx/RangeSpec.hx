@@ -65,7 +65,7 @@ import uhx.sys.seri.Range;
     @:variant(0, 20, 30, 1)
     public function testComplement(amin:Int, amax:Int, limit:Int, length:Int) {
         var r = new Range(amin, amax);
-        var c = Range.complement(r, limit);
+        var c = Range.complement(r, 0, limit);
         asserts.assert( !c.has(r.min) );
         asserts.assert( !c.has(r.max) );
         asserts.assert( c.values.length == length );
