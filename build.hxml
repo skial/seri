@@ -1,40 +1,43 @@
 -lib unifill
+-lib tink_unittest
 
 -cp src
+-cp tests
 
 -dce full
 -D analyzer-optimize
 
--main Main
+-main Entry
 
 --each
 
+-lib hxnodejs
 -js bin/seri.js
 
---next
-
--neko bin/seri.n
-
---next
-
--hl bin/seri.hl
-
---next
-
--java bin/java
-
---next
-
--cs bin/cs
-
---next
-
--python bin/seri.py
-
---next
-
--php bin/php
-
---next
-
---interp
+#--next
+#
+#-neko bin/seri.n
+#
+#--next
+#
+#-hl bin/seri.hl
+#
+#--next
+#
+#-java bin/java
+#
+#--next
+#
+#-cs bin/cs
+#
+#--next
+#
+#-python bin/seri.py
+#
+#--next
+#
+#-php bin/php
+#
+#--next
+#
+#--interp

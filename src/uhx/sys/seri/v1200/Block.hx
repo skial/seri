@@ -7,7 +7,7 @@ package uhx.sys.seri.v1200;
 import uhx.sys.seri.*;
 
 @:unicode("12.0.0")
-enum abstract Block(String) {
+enum abstract Block(String) to String {
     
     public var Adlam = "Adlam";
     public var AegeanNumbers = "Aegean Numbers";
@@ -617,904 +617,904 @@ enum abstract Block(String) {
         return switch this {
             #if !display
             
-            case Adlam:
+            case "Adlam":
                 new Range(125184, 125279);
             
-            case AegeanNumbers:
+            case "AegeanNumbers":
                 new Range(65792, 65855);
             
-            case Ahom:
+            case "Ahom":
                 new Range(71424, 71487);
             
-            case AlchemicalSymbols:
+            case "AlchemicalSymbols":
                 new Range(128768, 128895);
             
-            case AlphabeticPresentationForms:
+            case "AlphabeticPresentationForms":
                 new Range(64256, 64335);
             
-            case AnatolianHieroglyphs:
+            case "AnatolianHieroglyphs":
                 new Range(82944, 83583);
             
-            case AncientGreekMusicalNotation:
+            case "AncientGreekMusicalNotation":
                 new Range(119296, 119375);
             
-            case AncientGreekNumbers:
+            case "AncientGreekNumbers":
                 new Range(65856, 65935);
             
-            case AncientSymbols:
+            case "AncientSymbols":
                 new Range(65936, 65999);
             
-            case ArabicExtendedA:
+            case "ArabicExtendedA":
                 new Range(2208, 2303);
             
-            case ArabicMathematicalAlphabeticSymbols:
+            case "ArabicMathematicalAlphabeticSymbols":
                 new Range(126464, 126719);
             
-            case ArabicPresentationFormsA:
+            case "ArabicPresentationFormsA":
                 new Range(64336, 65023);
             
-            case ArabicPresentationFormsB:
+            case "ArabicPresentationFormsB":
                 new Range(65136, 65279);
             
-            case ArabicSupplement:
+            case "ArabicSupplement":
                 new Range(1872, 1919);
             
-            case Arabic:
+            case "Arabic":
                 new Range(1536, 1791);
             
-            case Armenian:
+            case "Armenian":
                 new Range(1328, 1423);
             
-            case Arrows:
+            case "Arrows":
                 new Range(8592, 8703);
             
-            case Avestan:
+            case "Avestan":
                 new Range(68352, 68415);
             
-            case Balinese:
+            case "Balinese":
                 new Range(6912, 7039);
             
-            case BamumSupplement:
+            case "BamumSupplement":
                 new Range(92160, 92735);
             
-            case Bamum:
+            case "Bamum":
                 new Range(42656, 42751);
             
-            case BasicLatin:
+            case "BasicLatin":
                 new Range(0, 127);
             
-            case BassaVah:
+            case "BassaVah":
                 new Range(92880, 92927);
             
-            case Batak:
+            case "Batak":
                 new Range(7104, 7167);
             
-            case Bengali:
+            case "Bengali":
                 new Range(2432, 2559);
             
-            case Bhaiksuki:
+            case "Bhaiksuki":
                 new Range(72704, 72815);
             
-            case BlockElements:
+            case "BlockElements":
                 new Range(9600, 9631);
             
-            case BopomofoExtended:
+            case "BopomofoExtended":
                 new Range(12704, 12735);
             
-            case Bopomofo:
+            case "Bopomofo":
                 new Range(12544, 12591);
             
-            case BoxDrawing:
+            case "BoxDrawing":
                 new Range(9472, 9599);
             
-            case Brahmi:
+            case "Brahmi":
                 new Range(69632, 69759);
             
-            case BraillePatterns:
+            case "BraillePatterns":
                 new Range(10240, 10495);
             
-            case Buginese:
+            case "Buginese":
                 new Range(6656, 6687);
             
-            case Buhid:
+            case "Buhid":
                 new Range(5952, 5983);
             
-            case ByzantineMusicalSymbols:
+            case "ByzantineMusicalSymbols":
                 new Range(118784, 119039);
             
-            case CJKCompatibilityForms:
+            case "CJKCompatibilityForms":
                 new Range(65072, 65103);
             
-            case CJKCompatibilityIdeographsSupplement:
+            case "CJKCompatibilityIdeographsSupplement":
                 new Range(194560, 195103);
             
-            case CJKCompatibilityIdeographs:
+            case "CJKCompatibilityIdeographs":
                 new Range(63744, 64255);
             
-            case CJKCompatibility:
+            case "CJKCompatibility":
                 new Range(13056, 13311);
             
-            case CJKRadicalsSupplement:
+            case "CJKRadicalsSupplement":
                 new Range(11904, 12031);
             
-            case CJKStrokes:
+            case "CJKStrokes":
                 new Range(12736, 12783);
             
-            case CJKSymbolsAndPunctuation:
+            case "CJKSymbolsAndPunctuation":
                 new Range(12288, 12351);
             
-            case CJKUnifiedIdeographsExtensionA:
+            case "CJKUnifiedIdeographsExtensionA":
                 new Range(13312, 19903);
             
-            case CJKUnifiedIdeographsExtensionB:
+            case "CJKUnifiedIdeographsExtensionB":
                 new Range(131072, 173791);
             
-            case CJKUnifiedIdeographsExtensionC:
+            case "CJKUnifiedIdeographsExtensionC":
                 new Range(173824, 177983);
             
-            case CJKUnifiedIdeographsExtensionD:
+            case "CJKUnifiedIdeographsExtensionD":
                 new Range(177984, 178207);
             
-            case CJKUnifiedIdeographsExtensionE:
+            case "CJKUnifiedIdeographsExtensionE":
                 new Range(178208, 183983);
             
-            case CJKUnifiedIdeographsExtensionF:
+            case "CJKUnifiedIdeographsExtensionF":
                 new Range(183984, 191471);
             
-            case CJKUnifiedIdeographs:
+            case "CJKUnifiedIdeographs":
                 new Range(19968, 40959);
             
-            case Carian:
+            case "Carian":
                 new Range(66208, 66271);
             
-            case CaucasianAlbanian:
+            case "CaucasianAlbanian":
                 new Range(66864, 66927);
             
-            case Chakma:
+            case "Chakma":
                 new Range(69888, 69967);
             
-            case Cham:
+            case "Cham":
                 new Range(43520, 43615);
             
-            case CherokeeSupplement:
+            case "CherokeeSupplement":
                 new Range(43888, 43967);
             
-            case Cherokee:
+            case "Cherokee":
                 new Range(5024, 5119);
             
-            case ChessSymbols:
+            case "ChessSymbols":
                 new Range(129536, 129647);
             
-            case CombiningDiacriticalMarksExtended:
+            case "CombiningDiacriticalMarksExtended":
                 new Range(6832, 6911);
             
-            case CombiningDiacriticalMarksForSymbols:
+            case "CombiningDiacriticalMarksForSymbols":
                 new Range(8400, 8447);
             
-            case CombiningDiacriticalMarksSupplement:
+            case "CombiningDiacriticalMarksSupplement":
                 new Range(7616, 7679);
             
-            case CombiningDiacriticalMarks:
+            case "CombiningDiacriticalMarks":
                 new Range(768, 879);
             
-            case CombiningHalfMarks:
+            case "CombiningHalfMarks":
                 new Range(65056, 65071);
             
-            case CommonIndicNumberForms:
+            case "CommonIndicNumberForms":
                 new Range(43056, 43071);
             
-            case ControlPictures:
+            case "ControlPictures":
                 new Range(9216, 9279);
             
-            case CopticEpactNumbers:
+            case "CopticEpactNumbers":
                 new Range(66272, 66303);
             
-            case Coptic:
+            case "Coptic":
                 new Range(11392, 11519);
             
-            case CountingRodNumerals:
+            case "CountingRodNumerals":
                 new Range(119648, 119679);
             
-            case CuneiformNumbersAndPunctuation:
+            case "CuneiformNumbersAndPunctuation":
                 new Range(74752, 74879);
             
-            case Cuneiform:
+            case "Cuneiform":
                 new Range(73728, 74751);
             
-            case CurrencySymbols:
+            case "CurrencySymbols":
                 new Range(8352, 8399);
             
-            case CypriotSyllabary:
+            case "CypriotSyllabary":
                 new Range(67584, 67647);
             
-            case CyrillicExtendedA:
+            case "CyrillicExtendedA":
                 new Range(11744, 11775);
             
-            case CyrillicExtendedB:
+            case "CyrillicExtendedB":
                 new Range(42560, 42655);
             
-            case CyrillicExtendedC:
+            case "CyrillicExtendedC":
                 new Range(7296, 7311);
             
-            case CyrillicSupplement:
+            case "CyrillicSupplement":
                 new Range(1280, 1327);
             
-            case Cyrillic:
+            case "Cyrillic":
                 new Range(1024, 1279);
             
-            case Deseret:
+            case "Deseret":
                 new Range(66560, 66639);
             
-            case DevanagariExtended:
+            case "DevanagariExtended":
                 new Range(43232, 43263);
             
-            case Devanagari:
+            case "Devanagari":
                 new Range(2304, 2431);
             
-            case Dingbats:
+            case "Dingbats":
                 new Range(9984, 10175);
             
-            case Dogra:
+            case "Dogra":
                 new Range(71680, 71759);
             
-            case DominoTiles:
+            case "DominoTiles":
                 new Range(127024, 127135);
             
-            case Duployan:
+            case "Duployan":
                 new Range(113664, 113823);
             
-            case EarlyDynasticCuneiform:
+            case "EarlyDynasticCuneiform":
                 new Range(74880, 75087);
             
-            case EgyptianHieroglyphFormatControls:
+            case "EgyptianHieroglyphFormatControls":
                 new Range(78896, 78911);
             
-            case EgyptianHieroglyphs:
+            case "EgyptianHieroglyphs":
                 new Range(77824, 78895);
             
-            case Elbasan:
+            case "Elbasan":
                 new Range(66816, 66863);
             
-            case Elymaic:
+            case "Elymaic":
                 new Range(69600, 69631);
             
-            case Emoticons:
+            case "Emoticons":
                 new Range(128512, 128591);
             
-            case EnclosedAlphanumericSupplement:
+            case "EnclosedAlphanumericSupplement":
                 new Range(127232, 127487);
             
-            case EnclosedAlphanumerics:
+            case "EnclosedAlphanumerics":
                 new Range(9312, 9471);
             
-            case EnclosedCJKLettersAndMonths:
+            case "EnclosedCJKLettersAndMonths":
                 new Range(12800, 13055);
             
-            case EnclosedIdeographicSupplement:
+            case "EnclosedIdeographicSupplement":
                 new Range(127488, 127743);
             
-            case EthiopicExtendedA:
+            case "EthiopicExtendedA":
                 new Range(43776, 43823);
             
-            case EthiopicExtended:
+            case "EthiopicExtended":
                 new Range(11648, 11743);
             
-            case EthiopicSupplement:
+            case "EthiopicSupplement":
                 new Range(4992, 5023);
             
-            case Ethiopic:
+            case "Ethiopic":
                 new Range(4608, 4991);
             
-            case GeneralPunctuation:
+            case "GeneralPunctuation":
                 new Range(8192, 8303);
             
-            case GeometricShapesExtended:
+            case "GeometricShapesExtended":
                 new Range(128896, 129023);
             
-            case GeometricShapes:
+            case "GeometricShapes":
                 new Range(9632, 9727);
             
-            case GeorgianExtended:
+            case "GeorgianExtended":
                 new Range(7312, 7359);
             
-            case GeorgianSupplement:
+            case "GeorgianSupplement":
                 new Range(11520, 11567);
             
-            case Georgian:
+            case "Georgian":
                 new Range(4256, 4351);
             
-            case GlagoliticSupplement:
+            case "GlagoliticSupplement":
                 new Range(122880, 122927);
             
-            case Glagolitic:
+            case "Glagolitic":
                 new Range(11264, 11359);
             
-            case Gothic:
+            case "Gothic":
                 new Range(66352, 66383);
             
-            case Grantha:
+            case "Grantha":
                 new Range(70400, 70527);
             
-            case GreekAndCoptic:
+            case "GreekAndCoptic":
                 new Range(880, 1023);
             
-            case GreekExtended:
+            case "GreekExtended":
                 new Range(7936, 8191);
             
-            case Gujarati:
+            case "Gujarati":
                 new Range(2688, 2815);
             
-            case GunjalaGondi:
+            case "GunjalaGondi":
                 new Range(73056, 73135);
             
-            case Gurmukhi:
+            case "Gurmukhi":
                 new Range(2560, 2687);
             
-            case HalfwidthAndFullwidthForms:
+            case "HalfwidthAndFullwidthForms":
                 new Range(65280, 65519);
             
-            case HangulCompatibilityJamo:
+            case "HangulCompatibilityJamo":
                 new Range(12592, 12687);
             
-            case HangulJamoExtendedA:
+            case "HangulJamoExtendedA":
                 new Range(43360, 43391);
             
-            case HangulJamoExtendedB:
+            case "HangulJamoExtendedB":
                 new Range(55216, 55295);
             
-            case HangulJamo:
+            case "HangulJamo":
                 new Range(4352, 4607);
             
-            case HangulSyllables:
+            case "HangulSyllables":
                 new Range(44032, 55215);
             
-            case HanifiRohingya:
+            case "HanifiRohingya":
                 new Range(68864, 68927);
             
-            case Hanunoo:
+            case "Hanunoo":
                 new Range(5920, 5951);
             
-            case Hatran:
+            case "Hatran":
                 new Range(67808, 67839);
             
-            case Hebrew:
+            case "Hebrew":
                 new Range(1424, 1535);
             
-            case HighPrivateUseSurrogates:
+            case "HighPrivateUseSurrogates":
                 new Range(56192, 56319);
             
-            case HighSurrogates:
+            case "HighSurrogates":
                 new Range(55296, 56191);
             
-            case Hiragana:
+            case "Hiragana":
                 new Range(12352, 12447);
             
-            case IPAExtensions:
+            case "IPAExtensions":
                 new Range(592, 687);
             
-            case IdeographicDescriptionCharacters:
+            case "IdeographicDescriptionCharacters":
                 new Range(12272, 12287);
             
-            case IdeographicSymbolsAndPunctuation:
+            case "IdeographicSymbolsAndPunctuation":
                 new Range(94176, 94207);
             
-            case ImperialAramaic:
+            case "ImperialAramaic":
                 new Range(67648, 67679);
             
-            case IndicSiyaqNumbers:
+            case "IndicSiyaqNumbers":
                 new Range(126064, 126143);
             
-            case InscriptionalPahlavi:
+            case "InscriptionalPahlavi":
                 new Range(68448, 68479);
             
-            case InscriptionalParthian:
+            case "InscriptionalParthian":
                 new Range(68416, 68447);
             
-            case Javanese:
+            case "Javanese":
                 new Range(43392, 43487);
             
-            case Kaithi:
+            case "Kaithi":
                 new Range(69760, 69839);
             
-            case KanaExtendedA:
+            case "KanaExtendedA":
                 new Range(110848, 110895);
             
-            case KanaSupplement:
+            case "KanaSupplement":
                 new Range(110592, 110847);
             
-            case Kanbun:
+            case "Kanbun":
                 new Range(12688, 12703);
             
-            case KangxiRadicals:
+            case "KangxiRadicals":
                 new Range(12032, 12255);
             
-            case Kannada:
+            case "Kannada":
                 new Range(3200, 3327);
             
-            case KatakanaPhoneticExtensions:
+            case "KatakanaPhoneticExtensions":
                 new Range(12784, 12799);
             
-            case Katakana:
+            case "Katakana":
                 new Range(12448, 12543);
             
-            case KayahLi:
+            case "KayahLi":
                 new Range(43264, 43311);
             
-            case Kharoshthi:
+            case "Kharoshthi":
                 new Range(68096, 68191);
             
-            case KhmerSymbols:
+            case "KhmerSymbols":
                 new Range(6624, 6655);
             
-            case Khmer:
+            case "Khmer":
                 new Range(6016, 6143);
             
-            case Khojki:
+            case "Khojki":
                 new Range(70144, 70223);
             
-            case Khudawadi:
+            case "Khudawadi":
                 new Range(70320, 70399);
             
-            case Lao:
+            case "Lao":
                 new Range(3712, 3839);
             
-            case Latin1Supplement:
+            case "Latin1Supplement":
                 new Range(128, 255);
             
-            case LatinExtendedA:
+            case "LatinExtendedA":
                 new Range(256, 383);
             
-            case LatinExtendedAdditional:
+            case "LatinExtendedAdditional":
                 new Range(7680, 7935);
             
-            case LatinExtendedB:
+            case "LatinExtendedB":
                 new Range(384, 591);
             
-            case LatinExtendedC:
+            case "LatinExtendedC":
                 new Range(11360, 11391);
             
-            case LatinExtendedD:
+            case "LatinExtendedD":
                 new Range(42784, 43007);
             
-            case LatinExtendedE:
+            case "LatinExtendedE":
                 new Range(43824, 43887);
             
-            case Lepcha:
+            case "Lepcha":
                 new Range(7168, 7247);
             
-            case LetterlikeSymbols:
+            case "LetterlikeSymbols":
                 new Range(8448, 8527);
             
-            case Limbu:
+            case "Limbu":
                 new Range(6400, 6479);
             
-            case LinearA:
+            case "LinearA":
                 new Range(67072, 67455);
             
-            case LinearBIdeograms:
+            case "LinearBIdeograms":
                 new Range(65664, 65791);
             
-            case LinearBSyllabary:
+            case "LinearBSyllabary":
                 new Range(65536, 65663);
             
-            case Lisu:
+            case "Lisu":
                 new Range(42192, 42239);
             
-            case LowSurrogates:
+            case "LowSurrogates":
                 new Range(56320, 57343);
             
-            case Lycian:
+            case "Lycian":
                 new Range(66176, 66207);
             
-            case Lydian:
+            case "Lydian":
                 new Range(67872, 67903);
             
-            case Mahajani:
+            case "Mahajani":
                 new Range(69968, 70015);
             
-            case MahjongTiles:
+            case "MahjongTiles":
                 new Range(126976, 127023);
             
-            case Makasar:
+            case "Makasar":
                 new Range(73440, 73471);
             
-            case Malayalam:
+            case "Malayalam":
                 new Range(3328, 3455);
             
-            case Mandaic:
+            case "Mandaic":
                 new Range(2112, 2143);
             
-            case Manichaean:
+            case "Manichaean":
                 new Range(68288, 68351);
             
-            case Marchen:
+            case "Marchen":
                 new Range(72816, 72895);
             
-            case MasaramGondi:
+            case "MasaramGondi":
                 new Range(72960, 73055);
             
-            case MathematicalAlphanumericSymbols:
+            case "MathematicalAlphanumericSymbols":
                 new Range(119808, 120831);
             
-            case MathematicalOperators:
+            case "MathematicalOperators":
                 new Range(8704, 8959);
             
-            case MayanNumerals:
+            case "MayanNumerals":
                 new Range(119520, 119551);
             
-            case Medefaidrin:
+            case "Medefaidrin":
                 new Range(93760, 93855);
             
-            case MeeteiMayekExtensions:
+            case "MeeteiMayekExtensions":
                 new Range(43744, 43775);
             
-            case MeeteiMayek:
+            case "MeeteiMayek":
                 new Range(43968, 44031);
             
-            case MendeKikakui:
+            case "MendeKikakui":
                 new Range(124928, 125151);
             
-            case MeroiticCursive:
+            case "MeroiticCursive":
                 new Range(68000, 68095);
             
-            case MeroiticHieroglyphs:
+            case "MeroiticHieroglyphs":
                 new Range(67968, 67999);
             
-            case Miao:
+            case "Miao":
                 new Range(93952, 94111);
             
-            case MiscellaneousMathematicalSymbolsA:
+            case "MiscellaneousMathematicalSymbolsA":
                 new Range(10176, 10223);
             
-            case MiscellaneousMathematicalSymbolsB:
+            case "MiscellaneousMathematicalSymbolsB":
                 new Range(10624, 10751);
             
-            case MiscellaneousSymbolsAndArrows:
+            case "MiscellaneousSymbolsAndArrows":
                 new Range(11008, 11263);
             
-            case MiscellaneousSymbolsAndPictographs:
+            case "MiscellaneousSymbolsAndPictographs":
                 new Range(127744, 128511);
             
-            case MiscellaneousSymbols:
+            case "MiscellaneousSymbols":
                 new Range(9728, 9983);
             
-            case MiscellaneousTechnical:
+            case "MiscellaneousTechnical":
                 new Range(8960, 9215);
             
-            case ModifierToneLetters:
+            case "ModifierToneLetters":
                 new Range(42752, 42783);
             
-            case Modi:
+            case "Modi":
                 new Range(71168, 71263);
             
-            case MongolianSupplement:
+            case "MongolianSupplement":
                 new Range(71264, 71295);
             
-            case Mongolian:
+            case "Mongolian":
                 new Range(6144, 6319);
             
-            case Mro:
+            case "Mro":
                 new Range(92736, 92783);
             
-            case Multani:
+            case "Multani":
                 new Range(70272, 70319);
             
-            case MusicalSymbols:
+            case "MusicalSymbols":
                 new Range(119040, 119295);
             
-            case MyanmarExtendedA:
+            case "MyanmarExtendedA":
                 new Range(43616, 43647);
             
-            case MyanmarExtendedB:
+            case "MyanmarExtendedB":
                 new Range(43488, 43519);
             
-            case Myanmar:
+            case "Myanmar":
                 new Range(4096, 4255);
             
-            case NKo:
+            case "NKo":
                 new Range(1984, 2047);
             
-            case Nabataean:
+            case "Nabataean":
                 new Range(67712, 67759);
             
-            case Nandinagari:
+            case "Nandinagari":
                 new Range(72096, 72191);
             
-            case NewTaiLue:
+            case "NewTaiLue":
                 new Range(6528, 6623);
             
-            case Newa:
+            case "Newa":
                 new Range(70656, 70783);
             
-            case NumberForms:
+            case "NumberForms":
                 new Range(8528, 8591);
             
-            case Nushu:
+            case "Nushu":
                 new Range(110960, 111359);
             
-            case NyiakengPuachueHmong:
+            case "NyiakengPuachueHmong":
                 new Range(123136, 123215);
             
-            case Ogham:
+            case "Ogham":
                 new Range(5760, 5791);
             
-            case OlChiki:
+            case "OlChiki":
                 new Range(7248, 7295);
             
-            case OldHungarian:
+            case "OldHungarian":
                 new Range(68736, 68863);
             
-            case OldItalic:
+            case "OldItalic":
                 new Range(66304, 66351);
             
-            case OldNorthArabian:
+            case "OldNorthArabian":
                 new Range(68224, 68255);
             
-            case OldPermic:
+            case "OldPermic":
                 new Range(66384, 66431);
             
-            case OldPersian:
+            case "OldPersian":
                 new Range(66464, 66527);
             
-            case OldSogdian:
+            case "OldSogdian":
                 new Range(69376, 69423);
             
-            case OldSouthArabian:
+            case "OldSouthArabian":
                 new Range(68192, 68223);
             
-            case OldTurkic:
+            case "OldTurkic":
                 new Range(68608, 68687);
             
-            case OpticalCharacterRecognition:
+            case "OpticalCharacterRecognition":
                 new Range(9280, 9311);
             
-            case Oriya:
+            case "Oriya":
                 new Range(2816, 2943);
             
-            case OrnamentalDingbats:
+            case "OrnamentalDingbats":
                 new Range(128592, 128639);
             
-            case Osage:
+            case "Osage":
                 new Range(66736, 66815);
             
-            case Osmanya:
+            case "Osmanya":
                 new Range(66688, 66735);
             
-            case OttomanSiyaqNumbers:
+            case "OttomanSiyaqNumbers":
                 new Range(126208, 126287);
             
-            case PahawhHmong:
+            case "PahawhHmong":
                 new Range(92928, 93071);
             
-            case Palmyrene:
+            case "Palmyrene":
                 new Range(67680, 67711);
             
-            case PauCinHau:
+            case "PauCinHau":
                 new Range(72384, 72447);
             
-            case PhagsPa:
+            case "PhagsPa":
                 new Range(43072, 43135);
             
-            case PhaistosDisc:
+            case "PhaistosDisc":
                 new Range(66000, 66047);
             
-            case Phoenician:
+            case "Phoenician":
                 new Range(67840, 67871);
             
-            case PhoneticExtensionsSupplement:
+            case "PhoneticExtensionsSupplement":
                 new Range(7552, 7615);
             
-            case PhoneticExtensions:
+            case "PhoneticExtensions":
                 new Range(7424, 7551);
             
-            case PlayingCards:
+            case "PlayingCards":
                 new Range(127136, 127231);
             
-            case PrivateUseArea:
+            case "PrivateUseArea":
                 new Range(57344, 63743);
             
-            case PsalterPahlavi:
+            case "PsalterPahlavi":
                 new Range(68480, 68527);
             
-            case Rejang:
+            case "Rejang":
                 new Range(43312, 43359);
             
-            case RumiNumeralSymbols:
+            case "RumiNumeralSymbols":
                 new Range(69216, 69247);
             
-            case Runic:
+            case "Runic":
                 new Range(5792, 5887);
             
-            case Samaritan:
+            case "Samaritan":
                 new Range(2048, 2111);
             
-            case Saurashtra:
+            case "Saurashtra":
                 new Range(43136, 43231);
             
-            case Sharada:
+            case "Sharada":
                 new Range(70016, 70111);
             
-            case Shavian:
+            case "Shavian":
                 new Range(66640, 66687);
             
-            case ShorthandFormatControls:
+            case "ShorthandFormatControls":
                 new Range(113824, 113839);
             
-            case Siddham:
+            case "Siddham":
                 new Range(71040, 71167);
             
-            case SinhalaArchaicNumbers:
+            case "SinhalaArchaicNumbers":
                 new Range(70112, 70143);
             
-            case Sinhala:
+            case "Sinhala":
                 new Range(3456, 3583);
             
-            case SmallFormVariants:
+            case "SmallFormVariants":
                 new Range(65104, 65135);
             
-            case SmallKanaExtension:
+            case "SmallKanaExtension":
                 new Range(110896, 110959);
             
-            case Sogdian:
+            case "Sogdian":
                 new Range(69424, 69487);
             
-            case SoraSompeng:
+            case "SoraSompeng":
                 new Range(69840, 69887);
             
-            case Soyombo:
+            case "Soyombo":
                 new Range(72272, 72367);
             
-            case SpacingModifierLetters:
+            case "SpacingModifierLetters":
                 new Range(688, 767);
             
-            case Specials:
+            case "Specials":
                 new Range(65520, 65535);
             
-            case SundaneseSupplement:
+            case "SundaneseSupplement":
                 new Range(7360, 7375);
             
-            case Sundanese:
+            case "Sundanese":
                 new Range(7040, 7103);
             
-            case SuperscriptsAndSubscripts:
+            case "SuperscriptsAndSubscripts":
                 new Range(8304, 8351);
             
-            case SupplementalArrowsA:
+            case "SupplementalArrowsA":
                 new Range(10224, 10239);
             
-            case SupplementalArrowsB:
+            case "SupplementalArrowsB":
                 new Range(10496, 10623);
             
-            case SupplementalArrowsC:
+            case "SupplementalArrowsC":
                 new Range(129024, 129279);
             
-            case SupplementalMathematicalOperators:
+            case "SupplementalMathematicalOperators":
                 new Range(10752, 11007);
             
-            case SupplementalPunctuation:
+            case "SupplementalPunctuation":
                 new Range(11776, 11903);
             
-            case SupplementalSymbolsAndPictographs:
+            case "SupplementalSymbolsAndPictographs":
                 new Range(129280, 129535);
             
-            case SupplementaryPrivateUseAreaA:
+            case "SupplementaryPrivateUseAreaA":
                 new Range(983040, 1048575);
             
-            case SupplementaryPrivateUseAreaB:
+            case "SupplementaryPrivateUseAreaB":
                 new Range(1048576, 1114111);
             
-            case SuttonSignWriting:
+            case "SuttonSignWriting":
                 new Range(120832, 121519);
             
-            case SylotiNagri:
+            case "SylotiNagri":
                 new Range(43008, 43055);
             
-            case SymbolsAndPictographsExtendedA:
+            case "SymbolsAndPictographsExtendedA":
                 new Range(129648, 129791);
             
-            case SyriacSupplement:
+            case "SyriacSupplement":
                 new Range(2144, 2159);
             
-            case Syriac:
+            case "Syriac":
                 new Range(1792, 1871);
             
-            case Tagalog:
+            case "Tagalog":
                 new Range(5888, 5919);
             
-            case Tagbanwa:
+            case "Tagbanwa":
                 new Range(5984, 6015);
             
-            case Tags:
+            case "Tags":
                 new Range(917504, 917631);
             
-            case TaiLe:
+            case "TaiLe":
                 new Range(6480, 6527);
             
-            case TaiTham:
+            case "TaiTham":
                 new Range(6688, 6831);
             
-            case TaiViet:
+            case "TaiViet":
                 new Range(43648, 43743);
             
-            case TaiXuanJingSymbols:
+            case "TaiXuanJingSymbols":
                 new Range(119552, 119647);
             
-            case Takri:
+            case "Takri":
                 new Range(71296, 71375);
             
-            case TamilSupplement:
+            case "TamilSupplement":
                 new Range(73664, 73727);
             
-            case Tamil:
+            case "Tamil":
                 new Range(2944, 3071);
             
-            case TangutComponents:
+            case "TangutComponents":
                 new Range(100352, 101119);
             
-            case Tangut:
+            case "Tangut":
                 new Range(94208, 100351);
             
-            case Telugu:
+            case "Telugu":
                 new Range(3072, 3199);
             
-            case Thaana:
+            case "Thaana":
                 new Range(1920, 1983);
             
-            case Thai:
+            case "Thai":
                 new Range(3584, 3711);
             
-            case Tibetan:
+            case "Tibetan":
                 new Range(3840, 4095);
             
-            case Tifinagh:
+            case "Tifinagh":
                 new Range(11568, 11647);
             
-            case Tirhuta:
+            case "Tirhuta":
                 new Range(70784, 70879);
             
-            case TransportAndMapSymbols:
+            case "TransportAndMapSymbols":
                 new Range(128640, 128767);
             
-            case Ugaritic:
+            case "Ugaritic":
                 new Range(66432, 66463);
             
-            case UnifiedCanadianAboriginalSyllabicsExtended:
+            case "UnifiedCanadianAboriginalSyllabicsExtended":
                 new Range(6320, 6399);
             
-            case UnifiedCanadianAboriginalSyllabics:
+            case "UnifiedCanadianAboriginalSyllabics":
                 new Range(5120, 5759);
             
-            case Vai:
+            case "Vai":
                 new Range(42240, 42559);
             
-            case VariationSelectorsSupplement:
+            case "VariationSelectorsSupplement":
                 new Range(917760, 917999);
             
-            case VariationSelectors:
+            case "VariationSelectors":
                 new Range(65024, 65039);
             
-            case VedicExtensions:
+            case "VedicExtensions":
                 new Range(7376, 7423);
             
-            case VerticalForms:
+            case "VerticalForms":
                 new Range(65040, 65055);
             
-            case Wancho:
+            case "Wancho":
                 new Range(123584, 123647);
             
-            case WarangCiti:
+            case "WarangCiti":
                 new Range(71840, 71935);
             
-            case YiRadicals:
+            case "YiRadicals":
                 new Range(42128, 42191);
             
-            case YiSyllables:
+            case "YiSyllables":
                 new Range(40960, 42127);
             
-            case YijingHexagramSymbols:
+            case "YijingHexagramSymbols":
                 new Range(19904, 19967);
             
-            case ZanabazarSquare:
+            case "ZanabazarSquare":
                 new Range(72192, 72271);
             
             #end
