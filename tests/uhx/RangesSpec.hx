@@ -213,7 +213,6 @@ class RangesSpec {
         asserts.assert( r.has( h.min ) && r.has( h.max ) );
         asserts.assert( r.remove( h ) == true );
         asserts.assert( !r.has( h.min ) && !r.has( h.max ) );
-
         asserts.assert( r.remove(new Range(10, 20)) == true );
         asserts.assert( r.values.length == 0 );
 
@@ -230,6 +229,19 @@ class RangesSpec {
         asserts.assert( c2.min == 10 );
         asserts.assert( c2.max == 90 );
         
+        return asserts.done();
+    }
+
+    public function testIssue15_removeFailure() {
+        var rs = new Ranges([9, 101, 560, 780, 1208, 6404, 8888, 9500, 120171]);
+        asserts.assert( rs.min == 9 );
+        asserts.assert( rs.max == 120171 );
+        asserts.assert( rs.values.length == 9 );
+        asserts.assert( rs.has( 101 ) );
+        asserts.assert( !rs.has( 7800 ) );
+        trace( rs.values.map( r -> '${r.min}:${r.max}') );
+        asserts.assert( rs.remove( {min:0x7F + 1, max:0x10FFFF} ) == true );
+        trace( rs.values.map( r -> '${r.min}:${r.max}') );
         return asserts.done();
     }
 

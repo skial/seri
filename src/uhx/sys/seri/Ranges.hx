@@ -101,19 +101,47 @@ using Lambda;
 	}
 
 	public function remove(range:Range):Bool {
-		if (range.min == min && range.max == max) {
+		if (range.max < min || range.min > max) return false;
+
+		if (range.min <= min && range.max >= max) {
 			values.splice(0, values.length);
 			return true;
 
-		} else if (has(range.min) || has(range.max)) {
-			var c = Ranges.complement(new Ranges([range]), min, max);
+		} else {
+			var idx = 0;
 
-			if (c.values.length > values.length || !c.has(range.min) && !c.has(range.max)) {
-				values = c.values;
-				return true;
+			while (idx < values.length) {
+				var r = values[idx];
 
+				if (range.min <= r.min && range.max >= r.max) {
+					values.splice(idx, 1);
+					continue;
+				}
+
+				if (range.min >= r.min && range.max <= r.max) {
+					var diff = Range.complement(range, r.min, r.max).values;
+					values[idx] = diff.shift();
+					var _idx = idx+1;
+					for (v in diff) {
+						values.insert(_idx, v);
+						_idx++;
+					}
+					return true;
+				}
+
+				if (range.min >= r.min && range.min <= r.max) {
+					r.max = range.min - 1;
+
+				} else if (range.max >= r.min && range.max <= r.max) {
+					r.min = range.max + 1;
+					return true;
+
+				}
+
+				idx++;
 			}
 
+			return idx != 0;
 		}
 
 		return false;
