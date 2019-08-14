@@ -9,8 +9,8 @@
     "version": "0.0.1-alpha",
     "url": "https://github.com/skial/seri",
     "dependencies": {
-        "unifill": "git:https://github.com/skial/unifill.git#7548aef986467835d322d9c296fb8f951eb8f850",
         "format":"3.4.2",
+        "unifill": "git:https://github.com/skial/unifill.git#7548aef986467835d322d9c296fb8f951eb8f850",
         "tink_core":"git:https://github.com/haxetink/tink_core.git#650acb4d9834a66212fdd71887d627485cb9219c"
     }
 }
