@@ -38,6 +38,6 @@
 #
 #-php bin/php
 #
-#--next
-#
-#--interp
+--next
+
+--interp

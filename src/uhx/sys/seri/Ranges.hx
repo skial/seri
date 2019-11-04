@@ -191,7 +191,7 @@ using Lambda;
 
 	// @see https://en.wikipedia.org/wiki/Union_(set_theory)
 	public static function union(a:Ranges, b:Ranges):Ranges {
-		var c = a.values.concat( b.values );
+		var c = a.values.concat( b.values.copy() );
 		var r = [c[0]];
 		var idx = 1;
 		var len = c.length-1;

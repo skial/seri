@@ -75,7 +75,7 @@ class RangesSpec {
         var r1 = new Ranges([new Range(10, 15), new Range(13, 18), new Range(19,20), 21]);
         var r2 = new Ranges([new Range(14, 11), new Range(9, 12), 18, new Range(8, 18), 4]);
         var u = Ranges.union(r1, r2);
-
+        
         asserts.assert( u.min == 4 );
         asserts.assert( u.max == 21 );
         asserts.assert( u.values.length == 2 );
@@ -83,6 +83,16 @@ class RangesSpec {
         asserts.assert( u.values[0].max == 4 );
         asserts.assert( u.values[1].min == 8 );
         asserts.assert( u.values[1].max == 21 );
+
+        for (range in r1.values) {
+            asserts.assert( u.has( range.min ) );
+            asserts.assert( u.has( range.max ) );
+        }
+
+        for (range in r2.values) {
+            asserts.assert( u.has( range.min ) );
+            asserts.assert( u.has( range.max ) );
+        }
         
         return asserts.done();
     }
