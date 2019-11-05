@@ -36,7 +36,12 @@ class Range {
 	
 	public inline function new(min:Int, max:Int);	
 	public inline function has(value:Int):Bool;
+	public inline function copy():Range;
 	public function iterator():Iterator<CodePoint>;
+
+	public static function intersection(a:Range, b:Range):Range;
+	public static function union(a:Range, b:Range):Ranges;
+	public static function complement(a:Range, ?min:Int, ?max:Int):Ranges;
 }
 ```
 
@@ -44,14 +49,23 @@ class Range {
 
 ```Haxe
 class Ranges {
-	public var ranges:Array<Range>;
+	public var values:Array<Range>;
 	public var min(default, null):Int;
 	public var max(default, null):Int;
 	public var length(default, null):Int;
 	
 	public inline function new(ranges:Array<Range>);
-	public inline function has(value:Int):Bool;
+	public function has(value:Int):Bool;
+	public inline function copy():Ranges;
+	public function insert(range:Range):Void;
+	public function add(range:Range):Bool;
+	public function remove(range:Range):Bool;
+	public function clamp(min:Int, max:Int):Ranges;
 	public function iterator():Iterator<CodePoint>;
+
+	public static function intersection(a:Ranges, b:Ranges):Ranges;
+	public static function union(a:Ranges, b:Ranges):Ranges;
+	public static function complement(a:Ranges, ?min:Int, ?max:Int):Ranges;
 }
 ```
 
