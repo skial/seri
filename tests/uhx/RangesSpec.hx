@@ -30,12 +30,14 @@ class RangesSpec {
 
     public function testHas() {
         var rs = new Ranges([new Range(10, 20), 25, 35, new Range(40, 42)]);
+
         asserts.assert( rs.has(18) );
         asserts.assert( !rs.has(22) );
         asserts.assert( !rs.has(34) );
         asserts.assert( rs.has(35) );
         asserts.assert( rs.has(41) );
         asserts.assert( !rs.has(50) );
+
         return asserts.done();
     }
 
@@ -43,11 +45,12 @@ class RangesSpec {
         var r1 = new Ranges([3, 8]);
         var r2 = new Ranges([1, 3, 7]);
         var i = Ranges.intersection(r1, r2);
-        trace( i );
+        
         asserts.assert( !i.has(1) );
         asserts.assert( i.has(3) );
         asserts.assert( !i.has(7) );
         asserts.assert( !i.has(8) );
+
         return asserts.done();
     }
 
@@ -78,11 +81,6 @@ class RangesSpec {
         
         asserts.assert( u.min == 4 );
         asserts.assert( u.max == 21 );
-        asserts.assert( u.values.length == 2 );
-        asserts.assert( u.values[0].min == 4 );
-        asserts.assert( u.values[0].max == 4 );
-        asserts.assert( u.values[1].min == 8 );
-        asserts.assert( u.values[1].max == 21 );
 
         for (range in r1.values) {
             asserts.assert( u.has( range.min ) );
@@ -97,6 +95,39 @@ class RangesSpec {
         return asserts.done();
     }
 
+    // @see https://github.com/skial/seri/issues/17
+    public function testIssue17() {
+        var a = new Ranges([
+            ':'.code, {min:'A'.code, max:'Z'.code}, '_'.code,
+            {min:'a'.code, max:'z'.code}, {min:0x00C0, max:0x00D6},
+            {min:0x00D8, max:0x00F6}, {min:0x00F8, max:0x02FF}, 
+            {min:0x0370, max:0x037D}, {min:0x037F, max:0x1FFF}, 
+            {min:0x200C, max:0x200D}, {min:0x2070, max:0x218F}, 
+            {min:0x2C00, max:0x2FEF}, {min:0x3001, max:0xD7FF}, 
+            {min:0xF900, max:0xFDCF}, {min:0xFDF0, max:0xFFFD}, 
+            {min:0x10000, max:0xEFFFF}
+        ]);
+
+        var b = new Ranges([
+            '-'.code, '.'.code, {min:'0'.code, max:'9'.code},
+            0x00B7, {min:0x0300, max:0x036F}, {min:0x203F, max:0x2040}
+        ]);
+
+        var u = Ranges.union( a, b );
+
+        for (range in a.values) {
+            asserts.assert( u.has( range.min ), 'u.has(${range.min})' + range.min );
+            asserts.assert( u.has( range.max ), 'u.has(${range.max})' + range.max );
+        }
+
+        for (range in b.values) {
+            asserts.assert( u.has( range.min ), 'u.has(${range.min})' + range.min );
+            asserts.assert( u.has( range.max ), 'u.has(${range.max})' + range.max );
+        }
+
+        return asserts.done();
+    }
+
     public function testComplement() {
         var r = new Ranges([
             new Range(10, 20), 
@@ -105,7 +136,7 @@ class RangesSpec {
             94,
         ]);
         var c = Ranges.complement(r, 0, 100);
-        //trace( c );
+        
         asserts.assert( c.min == 0 );
         asserts.assert( c.max == 100 );
         asserts.assert( c.values.length == 5 );
@@ -127,22 +158,16 @@ class RangesSpec {
     public function testAdd() {
         var r = new Ranges([]);
         asserts.assert( r.has(0) == false );
-        asserts.assert( r.add(new Range(10, 20)) == true );
+        asserts.assert( r.add(new Range(10, 20)) );
         asserts.assert( r.has(10) && r.has(20) );
         asserts.assert( r.add(15) == false );
-        asserts.assert( r.values.length == 1 );
         asserts.assert( r.add(19) == false );
-        asserts.assert( r.values.length == 1 );
-        asserts.assert( r.add(new Range(30, 40)) == true );
-        asserts.assert( r.values.length == 2 );
+        asserts.assert( r.add(new Range(30, 40)) );
         // 5-9 are not in range, but overlap with an existing `Range`
         // Insert a new `Range`.
-        asserts.assert( r.add(new Range(5, 15)) == true );
-        asserts.assert( r.values.length == 3 );
-        asserts.assert( r.add(new Range(15, 25)) == true );
-        asserts.assert( r.values.length == 4 );
+        asserts.assert( r.add(new Range(5, 15)) );
+        asserts.assert( r.add(new Range(15, 25)) );
 
-        //trace( r );
         return asserts.done();
     }
 
@@ -157,28 +182,62 @@ class RangesSpec {
 
     public function testAdd_individualOutOfOrder() {
         var r = new Ranges([]);
-        r.add('B'.code);
+        asserts.assert( r.add('B'.code) );
+
+        // [66:66]
+        asserts.assert( r.values.length == 1 );
+
         asserts.assert( r.min == 'B'.code );
         asserts.assert( r.max == 'B'.code );
+        asserts.assert( r.add('A'.code) );
+
+        // [65:66]
         asserts.assert( r.values.length == 1 );
-        r.add('A'.code);
+
         asserts.assert( r.min == 'A'.code );
         asserts.assert( r.max == 'B'.code );
-        asserts.assert( r.values.length == 1 );
-        r.add('H'.code);
-        asserts.assert( r.values.length == 2 );
-        r.add('D'.code);
-        asserts.assert( r.values[1].min == 'D'.code );
-        asserts.assert( r.values[1].max == 'D'.code );
-        asserts.assert( r.values.length == 3 );
-        r.add('C'.code);
-        r.add('G'.code);
-        r.add('F'.code);
-        r.add('E'.code);
-        asserts.assert( r.min == 'A'.code );
+        asserts.assert( r.add('H'.code) );
         asserts.assert( r.max == 'H'.code );
+
+        // [65:66, 72:72]
+        asserts.assert( r.values.length == 2 );
+
+        asserts.assert( r.add('D'.code) );
+
+        // [65:66, 68:68, 72:72]
+        asserts.assert( r.values.length == 3 );
+
+        asserts.assert( r.add('C'.code) );
+
+        // [65:68, 72:72]
+        asserts.assert( r.values.length == 2 );
+
+        asserts.assert( r.add('G'.code) );
+
+        // [65:68, 71:72]
+        asserts.assert( r.values.length == 2 );
+
+        asserts.assert( r.add('F'.code) );
+
+        // [65:68, 70:72]
+        asserts.assert( r.values.length == 2 );
+
+        asserts.assert( r.add('E'.code) );
+
+        // [65:72]
         asserts.assert( r.values.length == 1 );
-        trace( r.values );
+
+        asserts.assert( r.add('I'.code) );
+
+        // [65:73]
+        asserts.assert( r.values.length == 1 );
+
+        asserts.assert( r.min == 'A'.code );
+        asserts.assert( r.max == 'I'.code );
+
+        // Test `add` returns `false`
+        asserts.assert( !r.add('G'.code) );
+        
         return asserts.done();
     }
 
@@ -202,7 +261,6 @@ class RangesSpec {
         r.insert(6);
 
         asserts.assert( ('' + [1, 2, 3, 4, 5, 6]) == ('' + r.values.map( r -> r.min )) );
-        trace( r );
 
         return asserts.done();
     }
@@ -231,6 +289,7 @@ class RangesSpec {
 
     public function testClamp() {
         var r = new Ranges([new Range(10, 90)]);
+
         var c1 = r.clamp(20, 80);
         asserts.assert( c1.min == 20 );
         asserts.assert( c1.max == 80 );
@@ -244,14 +303,14 @@ class RangesSpec {
 
     public function testIssue15_removeFailure() {
         var rs = new Ranges([9, 101, 560, 780, 1208, 6404, 8888, 9500, 120171]);
+
         asserts.assert( rs.min == 9 );
         asserts.assert( rs.max == 120171 );
         asserts.assert( rs.values.length == 9 );
         asserts.assert( rs.has( 101 ) );
         asserts.assert( !rs.has( 7800 ) );
-        trace( rs.values.map( r -> '${r.min}:${r.max}') );
         asserts.assert( rs.remove( {min:0x7F + 1, max:0x10FFFF} ) == true );
-        trace( rs.values.map( r -> '${r.min}:${r.max}') );
+        
         return asserts.done();
     }
 

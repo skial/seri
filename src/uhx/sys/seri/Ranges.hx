@@ -58,46 +58,98 @@ using Lambda;
 		Returns false if **_nothing_** was inserted.
 	**/
 	public function add(range:Range):Bool {
-		var idx = values.length;
-		var inRange = false;
-		for (i in 0...values.length) {
-			if (i+1 <= (values.length-1) && range.min-1 == values[i].max && range.max == values[i+1].min-1) {
-				var r = new Range(values[i].min, values[i+1].max);
-				values[i] = r;
-				values.splice(i+1, 1);
-				inRange = true;
-				break;
-			} else if (range.min-1 == values[i].max) {
-				var copy = values[i].copy();
-				copy.max = range.max;
-				values[i] = copy;
-				inRange = true;
-				break;
-			} else if (range.max == values[i].min-1) {
-				var copy = values[i].copy();
-				copy.min = range.min;
-				values[i] = copy;
-				inRange = true;
-				break;
-			} else if (range.min > values[i].min && range.max < values[i].max) {
-				idx = i;
-				inRange = true;
-				break;
-			} else if (range.min < values[i].min && range.max < values[i].max) {
-				idx = i;
-				//range = new Range(range.min, values[i].min -1);
-				break;
-			} else if (range.min < values[i].max && range.max > values[i].max) {
-				idx = i+1;
-				//range = new Range(values[i].max + 1, range.max);
-				break;
-			}
+		if (values.length == 0) {
+			values.push( range );
+			return true;
+
 		}
 
-		if (!inRange) {
-			values.insert(idx, range);
+		var index = 0;
+		var local:Range;
+		var insertIndex = -1;
+		var added = false;
+		var merge = false;
+
+		while (index < values.length) {
+			local = values[index];
+			
+			if (merge) {
+				if (index >= 0 && index + 1 < values.length) {
+					var next = values[index + 1];
+
+					if (local.max + 1 == next.min) {
+						local.max = next.max;
+						values.splice(index + 1, 1);
+
+					}
+
+				}
+
+				if (index >= 1) {
+					var previous = values[index - 1];
+
+					if (local.min - 1 == previous.max) {
+						previous.max = local.max;
+						values.splice(index, 1);
+
+					}
+
+				}
+
+				return true;
+
+			} else {
+
+				if (range.min == local.min - 1) {
+					local.min--;
+					added = true;
+					merge = values.length > 1;
+				}
+
+				if (range.max == local.max + 1) {
+					local.max++;
+					added = true;
+					merge = values.length > 1;
+				}
+
+				if (local.min > range.max) {
+					// `range` needs to be inserted before `local`.
+					insertIndex = index;
+					break;
+
+				}
+				
+				if (range.min >= local.min && range.max <= local.max) {
+					// `range` exists within an existing `local`.
+					merge ? continue : return added;
+
+				}
+
+				if (range.min >= local.min && range.min <= local.max && range.max > local.max) {
+					local.max = range.max;
+					merge = true;
+
+				} else if (range.min < local.min && range.max >= local.min && range.max <= local.max) {
+					local.min = range.min;
+					merge = true;
+
+				}
+
+			}
+
+			index++;
+
 		}
-		return !inRange;
+
+		if (insertIndex != -1) {
+			values.insert(insertIndex, range);
+			return true;
+
+		}
+
+		values.push( range );
+
+		return true;
 	}
 
 	public function remove(range:Range):Bool {
@@ -191,37 +243,12 @@ using Lambda;
 
 	// @see https://en.wikipedia.org/wiki/Union_(set_theory)
 	public static function union(a:Ranges, b:Ranges):Ranges {
-		var c = a.values.concat( b.values.copy() );
-		var r = [c[0]];
-		var idx = 1;
-		var len = c.length-1;
+		var u = new Ranges([]);
 
-		while (idx <= len) {
-			var lidx = r.length-1;
-			var a = r[lidx];
-			var b = c[idx];
-			var bmin = b.min - 1;
-			var bmax = b.max - 1;
+		for (r in a.values) u.add( r );
+		for (r in b.values) u.add( r );
 
-			if (bmin <= a.min && bmax >= a.max) {
-				r[lidx] = b;
-
-			} else if (a.min <= bmin && a.max >= bmin && bmax >= a.max) {
-				r[lidx].max = b.max;
-
-			} else if (bmin <= a.min && bmax >= a.min && a.max >= bmax) {
-				r[lidx].min = b.min;
-
-			} else if (a.min > b.min) {
-				r[lidx] = b;
-				r.push( a );
-
-			}
-
-			idx++;
-		}
-
-		return new Ranges(r);
+		return u;
 	}
 
 	// @see https://en.wikipedia.org/wiki/Complement_(set_theory)
