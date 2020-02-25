@@ -78,9 +78,16 @@ class RangesSpec {
         var r1 = new Ranges([new Range(10, 15), new Range(13, 18), new Range(19,20), 21]);
         var r2 = new Ranges([new Range(14, 11), new Range(9, 12), 18, new Range(8, 18), 4]);
         var u = Ranges.union(r1, r2);
+
+        //trace( u.values.map( r -> r.min + ':' + r.max ) );
         
+        asserts.assert( u.values.length == 2 );
         asserts.assert( u.min == 4 );
         asserts.assert( u.max == 21 );
+        asserts.assert( u.values[0].min == 4 );
+        asserts.assert( u.values[0].max == 4 );
+        asserts.assert( u.values[1].min == 8 );
+        asserts.assert( u.values[1].max == 21 );
 
         for (range in r1.values) {
             asserts.assert( u.has( range.min ) );
@@ -96,7 +103,7 @@ class RangesSpec {
     }
 
     // @see https://github.com/skial/seri/issues/17
-    public function testIssue17() {
+    public function testIssue17_unionFailure() {
         var a = new Ranges([
             ':'.code, {min:'A'.code, max:'Z'.code}, '_'.code,
             {min:'a'.code, max:'z'.code}, {min:0x00C0, max:0x00D6},
@@ -184,52 +191,73 @@ class RangesSpec {
         var r = new Ranges([]);
         asserts.assert( r.add('B'.code) );
 
-        // [66:66]
+        // [66:66] | [B:B]
         asserts.assert( r.values.length == 1 );
 
         asserts.assert( r.min == 'B'.code );
         asserts.assert( r.max == 'B'.code );
         asserts.assert( r.add('A'.code) );
 
-        // [65:66]
+        // [65:66] | [A:B]
         asserts.assert( r.values.length == 1 );
 
         asserts.assert( r.min == 'A'.code );
         asserts.assert( r.max == 'B'.code );
         asserts.assert( r.add('H'.code) );
-        asserts.assert( r.max == 'H'.code );
 
-        // [65:66, 72:72]
+        // [65:66, 72:72] | [A:B, H]
+        asserts.assert( r.max == 'H'.code );
         asserts.assert( r.values.length == 2 );
+        asserts.assert( r.values[0].min == 'A'.code );
+        asserts.assert( r.values[0].max == 'B'.code );
+        asserts.assert( r.values[1].max == 'H'.code );
 
         asserts.assert( r.add('D'.code) );
 
-        // [65:66, 68:68, 72:72]
+        // [65:66, 68:68, 72:72] | [A:B, D, H]
         asserts.assert( r.values.length == 3 );
 
-        asserts.assert( r.add('C'.code) );
+        asserts.assert( r.values[0].min == 'A'.code );
+        asserts.assert( r.values[0].max == 'B'.code );
+        asserts.assert( r.values[1].max == 'D'.code );
+        asserts.assert( r.values[2].min == 'H'.code );
 
-        // [65:68, 72:72]
+        asserts.assert( r.add('C'.code) );  // should trigger `merge` if clause.
+
+        // [65:68, 72:72] | [A:D, H]
         asserts.assert( r.values.length == 2 );
+        asserts.assert( r.values[0].min == 'A'.code );
+        asserts.assert( r.values[0].max == 'D'.code );
+        asserts.assert( r.values[1].min == 'H'.code );
 
         asserts.assert( r.add('G'.code) );
+        asserts.assert( r.values[0].min == 'A'.code );
+        asserts.assert( r.values[0].max == 'D'.code );
+        asserts.assert( r.values[1].min == 'G'.code );
+        asserts.assert( r.values[1].max == 'H'.code );
 
-        // [65:68, 71:72]
+        // [65:68, 71:72] | [A:D, G:H]
         asserts.assert( r.values.length == 2 );
 
         asserts.assert( r.add('F'.code) );
 
-        // [65:68, 70:72]
+        // [65:68, 70:72] | [A:D, F:H]
         asserts.assert( r.values.length == 2 );
+        asserts.assert( r.values[0].min == 'A'.code );
+        asserts.assert( r.values[0].max == 'D'.code );
+        asserts.assert( r.values[1].min == 'F'.code );
+        asserts.assert( r.values[1].max == 'H'.code );
 
         asserts.assert( r.add('E'.code) );
 
-        // [65:72]
-        asserts.assert( r.values.length == 1 );
+        // [65:72] | [A:H]
+        asserts.assert( r.values.length == 1 ); // should trigger `merge` if clause.
+        asserts.assert( r.values[0].min == 'A'.code );
+        asserts.assert( r.values[0].max == 'H'.code );
 
         asserts.assert( r.add('I'.code) );
 
-        // [65:73]
+        // [65:73] | [A:I]
         asserts.assert( r.values.length == 1 );
 
         asserts.assert( r.min == 'A'.code );
@@ -237,6 +265,12 @@ class RangesSpec {
 
         // Test `add` returns `false`
         asserts.assert( !r.add('G'.code) );
+
+        asserts.assert( r.values.length == 1 );
+        asserts.assert( r.min == 'A'.code );
+        asserts.assert( r.max == 'I'.code );
+        asserts.assert( r.values[0].min == 'A'.code );
+        asserts.assert( r.values[0].max == 'I'.code );
         
         return asserts.done();
     }
@@ -311,6 +345,23 @@ class RangesSpec {
         asserts.assert( !rs.has( 7800 ) );
         asserts.assert( rs.remove( {min:0x7F + 1, max:0x10FFFF} ) == true );
         
+        return asserts.done();
+    }
+
+    // @see https://github.com/skial/seri/issues/19
+    public function testIssue19_addMergeFailure() {
+        var rs = new Ranges([]);
+
+        asserts.assert( rs.add(0xD800 - 1) );
+        asserts.assert( rs.values.length == 1 );
+        asserts.assert( rs.values[0].min == 0xD7FF );
+        asserts.assert( rs.values[0].max == 0xD7FF );
+
+        asserts.assert( rs.add( new Range(0xD800, 0xDBFF) ) );
+        asserts.assert( rs.values.length == 1 );
+        asserts.assert( rs.values[0].min == 0xD7FF );
+        asserts.assert( rs.values[0].max == 0xDBFF );
+
         return asserts.done();
     }
 

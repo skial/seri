@@ -55,7 +55,7 @@ using Lambda;
 
 	/**
 		Merges `range` with existing `values` if possible.
-		Returns false if **_nothing_** was inserted.
+		Returns false if **_nothing_** was modified.
 	**/
 	public function add(range:Range):Bool {
 		if (values.length == 0) {
@@ -72,8 +72,14 @@ using Lambda;
 
 		while (index < values.length) {
 			local = values[index];
+			#if debug_ranges
+			trace( local.min + ':' + local.max, '-> ' + range.min + ':' + range.max );
+			#end
 			
 			if (merge) {
+				#if debug_ranges
+				trace( 'merging' );
+				#end
 				if (index >= 0 && index + 1 < values.length) {
 					var next = values[index + 1];
 
@@ -101,37 +107,80 @@ using Lambda;
 			} else {
 
 				if (range.min == local.min - 1) {
+					// modify existing `local.min` value.
 					local.min--;
 					added = true;
 					merge = values.length > 1;
+					#if debug_ranges
+					trace(1);
+					#end
 				}
-
+				
 				if (range.max == local.max + 1) {
+					// modify existing `local.max` value.
 					local.max++;
 					added = true;
 					merge = values.length > 1;
+					#if debug_ranges
+					trace(2);
+					#end
 				}
 
-				if (local.min > range.max) {
+				/**
+					If `range` `min == max` is true AND both previous
+					checks passed, it now belongs within `local`.
+				**/
+				if (range.min >= local.min && range.max <= local.max) { // ref[2]
+					// `range` exists within an existing `local`.
+					#if debug_ranges
+					trace(4);
+					#end
+					merge ? continue : return added;
+
+				}
+				
+				if (local.min > range.max) { // ref[1]
 					// `range` needs to be inserted before `local`.
 					insertIndex = index;
+					#if debug_ranges
+					trace(3);
+					#end
 					break;
 
 				}
 				
-				if (range.min >= local.min && range.max <= local.max) {
-					// `range` exists within an existing `local`.
-					merge ? continue : return added;
+				/*
+					At this point we know:
+						+ That `local.min` is not larger than or equal too `range.max`. See ref[1].
+						+ And `range` does not entirely fit within `local`. See ref[2].
+				*/
+				if (local.has(range.min) && range.max > local.max) {
+					// `range.min` exists with `local`, so modify `local.max`.
+					local.max = range.max;
+					merge = true;
+					#if debug_ranges
+					trace(5);
+					#end
+
+				} 
+				
+				if (range.min < local.min && range.max < local.max) {
+					// check `range.max` so single codepoint ranges `min == max`.
+					local.min = range.min;
+					merge = true;
+					#if debug_ranges
+					trace(6);
+					#end
 
 				}
 
-				if (range.min >= local.min && range.min <= local.max && range.max > local.max) {
+				if (range.min - 1 == local.max) {
 					local.max = range.max;
-					merge = true;
-
-				} else if (range.min < local.min && range.max >= local.min && range.max <= local.max) {
-					local.min = range.min;
-					merge = true;
+					added = true;
+					merge = values.length > 1;
+					#if debug_ranges
+					trace(6.1);
+					#end
 
 				}
 
@@ -143,13 +192,28 @@ using Lambda;
 
 		if (insertIndex != -1) {
 			values.insert(insertIndex, range);
+			#if debug_ranges
+			trace(7);
+			trace( values.map( v-> v.min + ':' + v.max ));
+			#end
 			return true;
 
 		}
 
-		values.push( range );
+		if (!added && !merge) {
+			values.push( range );
+			#if debug_ranges
+			trace(8);
+			trace( values.map( v-> v.min + ':' + v.max ));
+			#end
+			return true;
+		}
 
-		return true;
+		#if debug_ranges
+		trace( values.map( v-> v.min + ':' + v.max ) );
+		#end
+
+		return added;
 	}
 
 	public function remove(range:Range):Bool {
