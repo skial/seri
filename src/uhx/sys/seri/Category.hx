@@ -1,6 +1,6 @@
 package uhx.sys.seri;
 
-import uhx.sys.seri.v1300.Category as GC;
+import uhx.sys.seri.v1400.Category as GC;
 
 // @see https://www.unicode.org/versions/Unicode12.0.0/ch04.pdf#G134153
 @:notNull 
