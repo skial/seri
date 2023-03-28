@@ -36,7 +36,7 @@ Download the following:
 - `Scripts.txt` 
 - `UnicodeData.txt`
 
-from the Unicode site and save to `res/{version}/` as `txt` or `gzip`s. Unicode version `14.0.0` files can be found at `https://www.unicode.org/Public/14.0.0/ucd/`.
+from the Unicode site and save to `res/{version}/` as `txt` or `gzip`s. Unicode version `15.0.0` files can be found at `https://www.unicode.org/Public/15.0.0/ucd/`.
 
 Then run:
 - `haxe build.template.hxml -D seri.version={version} -D dryrun`
